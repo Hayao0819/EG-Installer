@@ -115,7 +115,7 @@ for package in ${scripts[@]}; do
     fi
 done
 
-if [[ $(type -t preraring) = "function" ]]; then
+if [[ $(type -t preparing) = "function" ]]; then
     preraring | loading "パッケージをビルドしています"
 fi
 
