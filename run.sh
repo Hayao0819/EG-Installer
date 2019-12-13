@@ -93,7 +93,7 @@ selected=$(
         --column="インストール" \
         --column="パッケージ" \
         --column="説明" \
-        --text="インストールしたいパッケージを選択してください。"
+        --text="インストールしたいパッケージを選択してください。" \
         $(
             scripts=($(ls $script_dir))
             for package in ${scripts[@]}; do
