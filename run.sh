@@ -54,22 +54,25 @@ fi
 
 
 # AURユーザー
-function ask_user () {
-    export aur_user=$(window --entry --text="パッケージのビルドに使用する一般ユーザーを入力してください。")
-    if [[ -z $aur_user ]]; then
-        error "ユーザー名を入力してください。"
-        ask_user
-    fi
-    if [[ $aur_user = "root" ]]; then
-        error "一般ユーザーを入力してください。"
-        ask_user
-    fi
-}
-ask_user
-while [ $(user_check $aur_user) = 1 ]; do
-    error "存在しているユーザを入力してください。"
+source /etc/os-release
+if [[ $ID = "arch" || $ID = "arch32" ]]; then
+    function ask_user () {
+        export aur_user=$(window --entry --text="パッケージのビルドに使用する一般ユーザーを入力してください。")
+        if [[ -z $aur_user ]]; then
+            error "ユーザー名を入力してください。"
+            ask_user
+        fi
+        if [[ $aur_user = "root" ]]; then
+            error "一般ユーザーを入力してください。"
+            ask_user
+        fi
+    }
     ask_user
-done
+    while [ $(user_check $aur_user) = 1 ]; do
+        error "存在しているユーザを入力してください。"
+        ask_user
+    done
+fi
 
 
 # スクリプト読み込み
