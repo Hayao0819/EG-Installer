@@ -35,6 +35,13 @@ if [[ ! $UID = 0 ]]; then
 fi
 
 
+# ディスプレイチェック
+if [[ -z $DISPLAY ]]; then
+    echo "GUI環境で起動してください。" >&2
+    exit 1
+fi
+
+
 # スクリプト読み込み
 scripts=($(ls $script_dir))
 for package in ${scripts[@]}; do
