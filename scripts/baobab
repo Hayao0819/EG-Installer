@@ -1,0 +1,6 @@
+name="Baobab"
+description="ディスクのファイルサイズを確認します"
+
+function install () {
+    pacman -S baobab
+}
