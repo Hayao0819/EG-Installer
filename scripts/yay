@@ -1,0 +1,18 @@
+name="yay"
+description="pacmanの代わりになるAUR Helper"
+
+function preparing () {
+    curl -o /tmp/make_from_aur.sh https://gist.githubusercontent.com/Hayao0819/8af441b0ef8d10170f8ce6a23fa77587/raw/92088d2716f7f183421bb045929052e6d300777b/aur.bash
+    chmod 755 /tmp/make_from_aur.sh
+    su $aur_user -c "/tmp/make_from_aur.sh $name"
+    pkg_file=$(find $(pwd) -name "$name*.pkg.tar.xz")
+    mv $pkg_file /tmp > /dev/null
+    pkg_file=$(find /tmp -name "$name*.pkg.tar.xz")
+    rm /tmp/make_from_aur.sh
+}
+
+function install () {
+    pacman -Syy --noconfirm
+    pacman -U --noconfirm $pkg_file
+    rm $pkg_file
+}

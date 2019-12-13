@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 set -eu
+
+
 # 設定読み込み
 source ./settings.conf
 
@@ -19,6 +21,15 @@ function loading () {
 }
 function error () {
     window --error --text="$@"
+}
+function user_check () {
+    if [[ $(getent passwd $1 > /dev/null ; printf $?) = 0 ]]; then
+        printf 0
+        return 0
+    else
+        printf 1
+        return 1
+    fi
 }
 
 
@@ -40,6 +51,25 @@ if [[ -z $DISPLAY ]]; then
     echo "GUI環境で起動してください。" >&2
     exit 1
 fi
+
+
+# AURユーザー
+function ask_user () {
+    export aur_user=$(window --entry --text="パッケージのビルドに使用する一般ユーザーを入力してください。")
+    if [[ -z $aur_user ]]; then
+        error "ユーザー名を入力してください。"
+        ask_user
+    fi
+    if [[ $aur_user = "root" ]]; then
+        error "一般ユーザーを入力してください。"
+        ask_user
+    fi
+}
+ask_user
+while [ $(user_check $aur_user) = 1 ]; do
+    error "存在しているユーザを入力してください。"
+    ask_user
+done
 
 
 # スクリプト読み込み
@@ -84,6 +114,10 @@ for package in ${scripts[@]}; do
         break
     fi
 done
+
+if [[ $(type -t preraring) = "function" ]]; then
+    preraring | loading "パッケージをビルドしています"
+fi
 
 yes | install | loading "パッケージ$nameをインストールしています"
 
