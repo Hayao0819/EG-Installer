@@ -4,7 +4,7 @@ set -eu
 
 
 # 設定読み込み
-source ./settings.conf
+source $(cd $(dirname $0) && pwd)/settings.conf
 
 
 # 関数定義
