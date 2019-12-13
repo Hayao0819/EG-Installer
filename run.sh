@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eu
+# set -eu
 
 
 # 設定読み込み
@@ -116,7 +116,7 @@ for package in ${scripts[@]}; do
 done
 
 if [[ $(type -t preparing) = "function" ]]; then
-    preraring | loading "パッケージをビルドしています"
+    preparing | loading "パッケージをビルドしています"
 fi
 
 yes | install | loading "パッケージ$nameをインストールしています"
