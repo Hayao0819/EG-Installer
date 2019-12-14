@@ -72,11 +72,12 @@ function info () {
 # ユーザーチェック
 function user_check () {
     if [[ $(getent passwd $1 > /dev/null ; printf $?) = 0 ]]; then
+        if [[ -z $1 ]]; then
+            printf 1
+        fi
         printf 0
-        return 0
     else
         printf 1
-        return 1
     fi
 }
 
@@ -127,12 +128,19 @@ if [[ $ID = "arch" || $ID = "arch32" ]]; then
             ask_user
         fi
     }
-    ask_user
+    if [[ -f /tmp/user ]]; then
+        source /tmp/user
+        [[ -z $aur_user ]] && ask_user
+    else
+        ask_user
+    fi
     while [ $(user_check $aur_user) = 1 ]; do
         error 600 100 "存在しているユーザを入力してください。"
         ask_user
     done
 fi
+echo -n 'aur_user=' > /tmp/user
+echo "$aur_user" >> /tmp/user
 
 
 
@@ -221,5 +229,11 @@ fi
 info 600 100 "処理が完了しました。"
 
 
+
 #-- クリーンアップ --#
 # pacman -Qttdq | pacman -Rsn | loading 600 300 "不要なパッケージを削除しています。"
+
+
+
+#-- 最初に戻る --#
+$0
