@@ -169,9 +169,19 @@ selected=$(
 #-- インストール --#
 scripts=($(ls $script_dir))
 for package in ${scripts[@]}; do
+    set name
+    set description
+    set preparing
+    set install
+
     source $script_dir/$package
     if [[ $name = $selected ]]; then
         break
+    else
+        unset name
+        unset description
+        unset preparing
+        unset install
     fi
 done
 
@@ -179,5 +189,5 @@ if [[ $(type -t preparing) = "function" ]]; then
     preparing | loading 600 300 "パッケージをビルドしています"
 fi
 
-yes | install | loading 600 300 "パッケージ$nameをインストールしています"
+install | loading 600 300 "パッケージ$nameをインストールしています"
 
