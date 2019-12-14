@@ -1,0 +1,6 @@
+name="Grub-Customizer"
+description="ブートローダーであるGrub2のカスタマイズをGUIで簡単に行なえます。"
+
+function install () {
+    pacman -S --noconfirm grub-customizer
+}
