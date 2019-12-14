@@ -113,7 +113,7 @@ if [[ ! $(type -t check_pkg) = "function" ]]; then
 fi
 
 
-
+aur_user="0"
 #-- AURユーザー --#
 source /etc/os-release
 if [[ $ID = "arch" || $ID = "arch32" ]]; then
@@ -227,9 +227,9 @@ for selected in ${selected_list[@]}; do
             --cancel-label="中断する" \
             --width=600 \
             --height=100 \
-        if $run_preparing; then
-            preparing | loading 600 100 "パッケージをビルドしています"
-        fi
+        # if $run_preparing; then
+        #     preparing | loading 600 100 "パッケージをビルドしています"
+        # fi
         install | loading 600 100 "パッケージ$nameをインストールしています"
     else
         window \
