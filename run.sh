@@ -119,17 +119,17 @@ if [[ $ID = "arch" || $ID = "arch32" ]]; then
     function ask_user () {
         export aur_user=$(window --entry --text="パッケージのビルドに使用する一般ユーザーを入力してください。")
         if [[ -z $aur_user ]]; then
-            error 600 300 "ユーザー名を入力してください。"
+            error 600 100 "ユーザー名を入力してください。"
             ask_user
         fi
         if [[ $aur_user = "root" ]]; then
-            error 600 300 "一般ユーザーを入力してください。"
+            error 600 100 "一般ユーザーを入力してください。"
             ask_user
         fi
     }
     ask_user
     while [ $(user_check $aur_user) = 1 ]; do
-        error 600 300 "存在しているユーザを入力してください。"
+        error 600 100 "存在しているユーザを入力してください。"
         ask_user
     done
 fi
@@ -141,11 +141,11 @@ scripts=($(ls $script_dir))
 for package in ${scripts[@]}; do
     source $script_dir/$package
     if [[ ! $(type -t install) = "function" ]]; then
-        error 600 300 "スクリプト$packageのinstall関数が間違っています。"
+        error 600 100 "スクリプト$packageのinstall関数が間違っています。"
         exit 1
     fi
     if [[ -z $name ]]; then
-        error 600 300 "スクリプト$packageにname変数が設定されていません。"
+        error 600 100 "スクリプト$packageにname変数が設定されていません。"
         exit 1
     fi
 done
@@ -159,7 +159,7 @@ selected=$(
         --column="パッケージ" \
         --column="インストールされている" \
         --column="説明" \
-        --width="700" \
+        --width="850" \
         --height="500" \
         --text="インストールまたは削除したいパッケージを選択してください。" \
         $(
@@ -218,7 +218,7 @@ if [[ $(check_pkg $package_name) = 1 ]]; then
 else
     uninstall | loading 600 100 "パッケージ$nameをアンインストールしています。"
 fi
-
+info 600 100 "処理が完了しました。"
 
 
 #-- クリーンアップ --#
