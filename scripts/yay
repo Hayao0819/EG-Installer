@@ -5,7 +5,7 @@ run_preparing=true
 
 
 function preparing () {
-    curl -o /tmp/make_from_aur.sh https://gist.githubusercontent.com/Hayao0819/8af441b0ef8d10170f8ce6a23fa77587/raw/92088d2716f7f183421bb045929052e6d300777b/aur.bash
+    curl -o /tmp/make_from_aur.sh https://gist.githubusercontent.com/Hayao0819/3389c0ab2f000da13dbfe8e06315131b/raw/2a2d7b90efd6e89f8fe7d9ad095050e727309edb/aur.bash
     chmod 755 /tmp/make_from_aur.sh
     su $aur_user -c "/tmp/make_from_aur.sh $name"
     mv $(find $(pwd) -name "$name*.pkg.tar.xz") /tmp > /dev/null
