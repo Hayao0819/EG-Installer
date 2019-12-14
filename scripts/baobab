@@ -1,6 +1,13 @@
 name="Baobab"
+package_name="baobab"
 description="ディスクのファイルサイズを確認します"
+run_preparing=false
 
-function install () {
-    pacman -S --noconfirm baobab
+
+install () {
+    pacman -S --noconfirm ${package_name}
+}
+
+uninstall () {
+    pacman -Rsn --noconfirm ${package_name}
 }

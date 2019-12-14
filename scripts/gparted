@@ -1,6 +1,12 @@
 name="Gparted"
+package_name="gparted"
 description="ディスクのパーティションを操作します"
+run_preparing=false
 
-function install () {
-    pacman -S --noconfirm baobab 
+install () {
+    pacman -S --noconfirm ${package_name}
+}
+
+uninstall () {
+    pacman -Rsn --noconfirm ${package_name}
 }

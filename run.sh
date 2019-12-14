@@ -105,6 +105,14 @@ fi
 
 
 
+#-- check_pkg関数のチェック --#
+if [[ ! $(type -t check_pkg) = "function" ]]; then
+    error 600 300 "$(cd $(dirname $0) && pwd)/settings.confのcheck_pkgが正しくありません。"
+    exit 1
+fi
+
+
+
 #-- AURユーザー --#
 source /etc/os-release
 if [[ $ID = "arch" || $ID = "arch32" ]]; then
@@ -149,16 +157,23 @@ selected=$(
     window --list --radiolist \
         --column="インストール" \
         --column="パッケージ" \
+        --column="インストールされている" \
         --column="説明" \
         --width="700" \
         --height="500" \
-        --text="インストールしたいパッケージを選択してください。" \
+        --text="インストールまたは削除したいパッケージを選択してください。" \
         $(
             scripts=($(ls $script_dir))
             for package in ${scripts[@]}; do
                 source $script_dir/$package
+                if [[ $(check_pkg $package_name) = 0 ]]; then
+                    status_display="はい"
+                else
+                    status_display="いいえ"
+                fi
                 echo "FALSE"
                 echo "$name"
+                echo "$status_display"
                 echo "$description"
             done
         )
@@ -171,7 +186,7 @@ pacman -Syy --noconfirm | loading 600 300 "リポジトリデータベースを�
 
 
 
-#-- インストール --#
+#-- 選択パッケージに対応しているファイルを探す --#
 scripts=($(ls $script_dir))
 for package in ${scripts[@]}; do
     set name
@@ -182,17 +197,30 @@ for package in ${scripts[@]}; do
     source $script_dir/$package
     if [[ $name = $selected ]]; then
         break
-    else
-        unset name
-        unset description
-        unset preparing
-        unset install
     fi
+    unset name
+    unset description
+    unset preparing
+    unset run_preparing
+    unset install
 done
 
-if [[ $(type -t preparing) = "function" ]]; then
+
+
+# インストール or アンインストール
+source $script_dir/$package
+
+if $run_preparing; then
     preparing | loading 600 300 "パッケージをビルドしています"
 fi
 
-install | loading 600 300 "パッケージ$nameをインストールしています"
+if [[ $(check_pkg $package_name) = 1 ]]; then
+    install | loading 600 100 "パッケージ$nameをインストールしています"
+else
+    uninstall | loading 600 100 "パッケージ$nameをアンインストールしています。"
+fi
 
+
+
+#-- クリーンアップ --#
+# pacman -Qttdq | pacman -Rsn | loading 600 300 "不要なパッケージを削除しています。"
