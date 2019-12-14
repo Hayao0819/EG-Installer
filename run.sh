@@ -1,27 +1,75 @@
 #!/usr/bin/env bash
 
-# set -eu
+set -eu
+
+#===== 各基本ウィンドウの使い方 =====#
+# プログレスバー
+# command | loading [横幅] [高さ] [メッセージ]
+#
+# エラーウィンドウ
+# error [横幅] [高さ] [メッセージ]
+#
+# 警告ウィンドウ
+# warning [横幅] [高さ] [メッセージ]
+#
+# 情報ウィンドウ
+# info [横幅] [高さ] [メッセージ]
+#
 
 
-# 設定読み込み
+#-- 設定読み込み --#
 source $(cd $(dirname $0) && pwd)/settings.conf
 
 
-# 関数定義
+#-- 関数定義 --#
+
+# ウィンドウの基本型
 function window () {
     zenity \
         --title="$window_text" \
         --window-icon="$window_icon" \
-        --width="$window_width" \
-        --height="$window_height" \
         $@
 }
+
+# 読み込みウィンドウ
 function loading () {
-    window --progress --auto-close --pulsate --text="$@"
+    window \
+        --progress \
+        --auto-close \
+        --pulsate \
+        --width="$1" \
+        --height="$2" \
+        --text="$3"
 }
+
+# エラーウィンドウ
 function error () {
-    window --error --text="$@"
+    window \
+        --error \
+        --width="$1" \
+        --height="$2" \
+        --text="$3"
 }
+
+# 警告ウィンドウ
+function warning () {
+    window \
+        --warning \
+        --width="$1" \
+        --height="$2" \
+        --text="$3"
+}
+
+# 情報ウィンドウ
+function info () {
+    window \
+        --info
+        --width="$1"
+        --height="$2"
+        --text="$3"
+}
+
+# ユーザーチェック
 function user_check () {
     if [[ $(getent passwd $1 > /dev/null ; printf $?) = 0 ]]; then
         printf 0
@@ -33,69 +81,77 @@ function user_check () {
 }
 
 
-# 変数定義
+
+#-- 変数定義 --#
 script_path=$(cd $(dirname $0) && pwd)/$(basename $0)
 script_dir=$(dirname $script_path)
 script_dir="$script_dir/scripts"
 
 
-# Rootチェック
+
+#-- Rootチェック --#
 if [[ ! $UID = 0 ]]; then
     pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY $script_path > /dev/null
     exit
 fi
 
 
-# ディスプレイチェック
+
+#-- ディスプレイチェック --#
 if [[ -z $DISPLAY ]]; then
     echo "GUI環境で起動してください。" >&2
     exit 1
 fi
 
 
-# AURユーザー
+
+#-- AURユーザー --#
 source /etc/os-release
 if [[ $ID = "arch" || $ID = "arch32" ]]; then
     function ask_user () {
         export aur_user=$(window --entry --text="パッケージのビルドに使用する一般ユーザーを入力してください。")
         if [[ -z $aur_user ]]; then
-            error "ユーザー名を入力してください。"
+            error 600 300 "ユーザー名を入力してください。"
             ask_user
         fi
         if [[ $aur_user = "root" ]]; then
-            error "一般ユーザーを入力してください。"
+            error 600 300 "一般ユーザーを入力してください。"
             ask_user
         fi
     }
     ask_user
     while [ $(user_check $aur_user) = 1 ]; do
-        error "存在しているユーザを入力してください。"
+        error 600 300 "存在しているユーザを入力してください。"
         ask_user
     done
 fi
 
 
-# スクリプト読み込み
+
+#-- スクリプト読み込み --#
 scripts=($(ls $script_dir))
 for package in ${scripts[@]}; do
     source $script_dir/$package
     if [[ ! $(type -t install) = "function" ]]; then
-        error "スクリプト$packageのinstall関数が間違っています。"
+        error 600 300 "スクリプト$packageのinstall関数が間違っています。"
         exit 1
     fi
     if [[ -z $name ]]; then
-        error "スクリプト$packageにname変数が設定されていません。"
+        error 600 300 "スクリプト$packageにname変数が設定されていません。"
         exit 1
     fi
 done
 
 
-# リスト
+
+#-- リスト --#
 selected=$(
     window --list --radiolist \
         --column="インストール" \
         --column="パッケージ" \
         --column="説明" \
+        --width="700" \
+        --height="500" \
         --text="インストールしたいパッケージを選択してください。" \
         $(
             scripts=($(ls $script_dir))
@@ -109,7 +165,8 @@ selected=$(
 )
 
 
-# インストール
+
+#-- インストール --#
 scripts=($(ls $script_dir))
 for package in ${scripts[@]}; do
     source $script_dir/$package
@@ -119,8 +176,8 @@ for package in ${scripts[@]}; do
 done
 
 if [[ $(type -t preparing) = "function" ]]; then
-    preparing | loading "パッケージをビルドしています"
+    preparing | loading 600 300 "パッケージをビルドしています"
 fi
 
-yes | install | loading "パッケージ$nameをインストールしています"
+yes | install | loading 600 300 "パッケージ$nameをインストールしています"
 
