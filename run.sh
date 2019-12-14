@@ -220,15 +220,29 @@ for selected in ${selected_list[@]}; do
     source $script_dir/$package
 
     if [[ $(check_pkg $package_name) = 1 ]]; then
+        window \
+            --question \
+            --text="パッケージ$nameをインストールします。よろしいですか？" \
+            --ok-label="続行する" \
+            --cancel-label="中断する" \
+            --width=600 \
+            --height=100 \
         if $run_preparing; then
             preparing | loading 600 100 "パッケージをビルドしています"
         fi
         install | loading 600 100 "パッケージ$nameをインストールしています"
     else
+        window \
+            --question \
+            --text="パッケージ$nameをアンインストールします。よろしいですか？" \
+            --ok-label="続行する" \
+            --cancel-label="中断する" \
+            --width=600 \
+            --height=100 \
         uninstall | loading 600 100 "パッケージ$nameをアンインストールしています。"
     fi
 done
-info 600 100 "処理が完了しました。"
+info 600 100 "処理が完了しました。\n詳細はターミナルを参照してください。"
 
 
 
