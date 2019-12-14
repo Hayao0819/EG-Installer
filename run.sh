@@ -166,6 +166,11 @@ selected=$(
 
 
 
+#--- データベースの更新 --#
+pacman -Syy --noconfirm | loading 600 300 "リポジトリデータベースを更新しています。"
+
+
+
 #-- インストール --#
 scripts=($(ls $script_dir))
 for package in ${scripts[@]}; do
