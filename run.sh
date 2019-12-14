@@ -182,7 +182,7 @@ selected=$(
 
 
 #--- データベースの更新 --#
-pacman -Syy --noconfirm | loading 600 300 "リポジトリデータベースを更新しています。"
+pacman -Syy --noconfirm | loading 600 100 "リポジトリデータベースを更新しています。"
 
 
 
@@ -212,7 +212,7 @@ source $script_dir/$package
 
 if [[ $(check_pkg $package_name) = 1 ]]; then
     if $run_preparing; then
-        preparing | loading 600 300 "パッケージをビルドしています"
+        preparing | loading 600 100 "パッケージをビルドしています"
     fi
     install | loading 600 100 "パッケージ$nameをインストールしています"
 else
