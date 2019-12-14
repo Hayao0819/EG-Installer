@@ -63,9 +63,9 @@ function warning () {
 # 情報ウィンドウ
 function info () {
     window \
-        --info
-        --width="$1"
-        --height="$2"
+        --info \
+        --width="$1" \
+        --height="$2" \
         --text="$3"
 }
 
