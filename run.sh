@@ -161,8 +161,8 @@ done
 
 
 #-- リスト --#
-selected=$(
-    window --list --radiolist \
+selected_list=$(
+    window --list --checklist \
         --column="インストール" \
         --column="パッケージ" \
         --column="インストールされている" \
@@ -186,7 +186,7 @@ selected=$(
             done
         )
 )
-
+selected_list=(${selected_list//'|'/ })
 
 
 #--- データベースの更新 --#
@@ -194,38 +194,40 @@ pacman -Syy --noconfirm | loading 600 100 "リポジトリデータベースを�
 
 
 
-#-- 選択パッケージに対応しているファイルを探す --#
-scripts=($(ls $script_dir))
-for package in ${scripts[@]}; do
-    set name
-    set description
-    set preparing
-    set install
+#-- 実行 --#
 
+for selected in ${selected_list[@]}; do
+    # 選択パッケージに対応しているファイルを探す
+    scripts=($(ls $script_dir))
+    for package in ${scripts[@]}; do
+        set name
+        set description
+        set preparing
+        set install
+
+        source $script_dir/$package
+        if [[ $name = $selected ]]; then
+            break
+        fi
+        unset name
+        unset description
+        unset preparing
+        unset run_preparing
+        unset install
+    done
+
+    # インストール or アンインストール
     source $script_dir/$package
-    if [[ $name = $selected ]]; then
-        break
+
+    if [[ $(check_pkg $package_name) = 1 ]]; then
+        if $run_preparing; then
+            preparing | loading 600 100 "パッケージをビルドしています"
+        fi
+        install | loading 600 100 "パッケージ$nameをインストールしています"
+    else
+        uninstall | loading 600 100 "パッケージ$nameをアンインストールしています。"
     fi
-    unset name
-    unset description
-    unset preparing
-    unset run_preparing
-    unset install
 done
-
-
-
-# インストール or アンインストール
-source $script_dir/$package
-
-if [[ $(check_pkg $package_name) = 1 ]]; then
-    if $run_preparing; then
-        preparing | loading 600 100 "パッケージをビルドしています"
-    fi
-    install | loading 600 100 "パッケージ$nameをインストールしています"
-else
-    uninstall | loading 600 100 "パッケージ$nameをアンインストールしています。"
-fi
 info 600 100 "処理が完了しました。"
 
 
