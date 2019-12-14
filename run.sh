@@ -210,11 +210,10 @@ done
 # インストール or アンインストール
 source $script_dir/$package
 
-if $run_preparing; then
-    preparing | loading 600 300 "パッケージをビルドしています"
-fi
-
 if [[ $(check_pkg $package_name) = 1 ]]; then
+    if $run_preparing; then
+        preparing | loading 600 300 "パッケージをビルドしています"
+    fi
     install | loading 600 100 "パッケージ$nameをインストールしています"
 else
     uninstall | loading 600 100 "パッケージ$nameをアンインストールしています。"
