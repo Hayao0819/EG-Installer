@@ -10,7 +10,6 @@ function preparing () {
 }
 
 function install () {
-    pacman -Syy --noconfirm
     pkg_file=$(find /tmp -name "$name*.pkg.tar.xz")
     pacman -U --noconfirm $pkg_file
     rm $pkg_file

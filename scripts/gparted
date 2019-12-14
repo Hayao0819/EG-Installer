@@ -2,5 +2,5 @@ name="Gparted"
 description="ディスクのパーティションを操作します"
 
 function install () {
-    pacman -S baobab 
+    pacman -S --noconfirm baobab 
 }
