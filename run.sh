@@ -21,6 +21,10 @@ set -eu
 source $(cd $(dirname $0) && pwd)/settings.conf
 
 
+#-- 最新のパッケージ情報取得 --#
+source $(cd $(dirname $0) && pwd)/getpackages.sh
+
+
 #-- 関数定義 --#
 
 # ウィンドウの基本型
