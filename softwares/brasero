@@ -1,6 +1,6 @@
 name="Brasero"
 package_name="brasero"
-description="デCD/DVD マスタリングツール"
+description="CD/DVDマスタリングツール"
 run_preparing=false
 
 
