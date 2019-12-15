@@ -15,6 +15,7 @@ set -eu
 # 情報ウィンドウ
 # info [横幅] [高さ] [メッセージ]
 #
+# 改行する場合は \n と記述してください。　
 
 
 #-- 設定読み込み --#
@@ -169,7 +170,10 @@ done
 
 
 #-- リスト --#
-selected_list=$(
+
+warning 600 100 "パッケージの生成を行います。これには時間がかかる場合があります。"
+
+gen_list () {
     window --list --checklist \
         --column="インストール" \
         --column="パッケージ" \
@@ -193,7 +197,10 @@ selected_list=$(
                 echo "$description"
             done
         )
-)
+}
+
+selected_list=$(gen_list)
+
 selected_list=(${selected_list//'|'/ })
 
 
