@@ -1,0 +1,13 @@
+name="Brasero"
+package_name="brasero"
+description="デCD/DVD マスタリングツール"
+run_preparing=false
+
+
+install () {
+    pacman -S --noconfirm ${package_name}
+}
+
+uninstall () {
+    pacman -Rsn --noconfirm ${package_name}
+}

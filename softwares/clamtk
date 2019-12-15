@@ -1,0 +1,13 @@
+name="ClamTk"
+package_name="clamtk"
+description="Linuxのためのアンチウイルスソフト。"
+run_preparing=false
+
+
+install () {
+    pacman -S --noconfirm ${package_name}
+}
+
+uninstall () {
+    pacman -Rsn --noconfirm ${package_name}
+}
