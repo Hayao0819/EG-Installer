@@ -182,7 +182,7 @@ gen_list () {
     window \
         --list \
         --checklist \
-        --column="インストール" \
+        --column="選択" \
         --column="パッケージ" \
         --column="インストールされている" \
         --column="説明" \
