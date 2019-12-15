@@ -4,9 +4,9 @@ description="ディスクのパーティションを操作します"
 run_preparing=false
 
 install () {
- pacman -S --noconfirm ${package_name}
+ apt install ${package_name}
 }
 
 uninstall () {
- pacman -Rsn --noconfirm ${package_name}
+ apt purge ${package_name} && apt autoremove
 }

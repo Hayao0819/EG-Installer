@@ -3,8 +3,8 @@ package_name="adapta-gtk-theme"
 description="マテリアルデザインに基づいたテーマパック"
 run_preparing=false
 install () {
- pacapt -S $package_name --noconfirm
+ apt install ${package_name}
 }
 uninstall () {
- pacapt -Rsn --noconfirm ${package_name}
+ apt purge ${package_name} && apt autoremove
 }
