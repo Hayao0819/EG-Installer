@@ -1,0 +1,91 @@
+name="日本語入力システム"
+package_name="fcitx-mozc"
+description="日本語入力のインストールと設定を行います。"
+run_preparing=false
+
+
+install () {
+    set -eu
+    #-- 関数定義 --#
+    # ウィンドウの基本型
+    function window () {
+        zenity \
+            $@ \
+            --title="日本語入力インストーラー"
+    }
+
+    # 読み込みウィンドウ
+    function loading () {
+        window \
+            --progress \
+            --auto-close \
+            --pulsate \
+            --width="$1" \
+            --height="$2" \
+            --text="$3"
+    }
+
+    # エラーウィンドウ
+    function error () {
+        window \
+            --error \
+            --width="$1" \
+            --height="$2" \
+            --text="$3"
+    }
+
+    # 警告ウィンドウ
+    function warning () {
+        window \
+            --warning \
+            --width="$1" \
+            --height="$2" \
+            --text="$3"
+    }
+
+    # 情報ウィンドウ
+    function info () {
+        window \
+            --info \
+            --width="$1" \
+            --height="$2" \
+            --text="$3"
+    }
+
+    # ユーザーチェック
+    function user_check () {
+        if [[ $(getent passwd $1 > /dev/null ; printf $?) = 0 ]]; then
+            if [[ -z $1 ]]; then
+                printf 1
+            fi
+            printf 0
+        else
+            printf 1
+        fi
+    }
+
+    #-- 設定ユーザー --#
+    function ask_user () {
+        export user=$(window --entry --text="日本語入力を設定するユーザーを入力してください。")
+        if [[ -z $user ]]; then
+            error 600 100 "正しいユーザー名を入力してください。"
+            ask_user
+        fi
+    }
+    ask_user
+    while [ $(user_check $user) = 1 ]; do
+        error 600 100 "存在しているユーザを入力してください。"
+        ask_user
+    done
+
+    pacman -S fcitx-im fcitx-configtool fcitx-mozc --noconfirm
+    warning 600 100 "/home/$user/.xprofileに設定を追記します。\nアンインストールする場合はこのファイルの該当部分を削除してください。"
+    echo -e "export GTK_IM_MODULE=fcitx\nexport QT_IM_MODULE=fcitx\nexport XMODIFIERS=”@im=fcitx”" >> /home/$user/.xprofile
+    set +eu
+}
+
+uninstall () {
+    pacman -Rsnc fcitx-im fcitx-configtool fcitx-mozc --noconfirm
+    warning 600 100 "~/.xprofileに設定が存在します。\nこのファイルの該当部分を手動で削除してください。"
+}
+install
