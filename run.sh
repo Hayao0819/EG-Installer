@@ -226,7 +226,7 @@ for selected in ${selected_list[@]}; do
             --ok-label="続行する" \
             --cancel-label="中断する" \
             --width=600 \
-            --height=100 \
+            --height=100
         if $run_preparing; then
             preparing | loading 600 100 "パッケージをビルドしています"
         fi
@@ -238,7 +238,7 @@ for selected in ${selected_list[@]}; do
             --ok-label="続行する" \
             --cancel-label="中断する" \
             --width=600 \
-            --height=100 \
+            --height=100
         uninstall | loading 600 100 "パッケージ$nameをアンインストールしています。"
     fi
 done
