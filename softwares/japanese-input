@@ -88,4 +88,3 @@ uninstall () {
     pacman -Rsnc fcitx-im fcitx-configtool fcitx-mozc --noconfirm
     warning 600 100 "~/.xprofileに設定が存在します。\nこのファイルの該当部分を手動で削除してください。"
 }
-install
