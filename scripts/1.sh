@@ -1,10 +1,10 @@
-name="Adapta-Theme" 
- package_name="htop" 
- description="マテリアルデザインに基づいたテーマパック" 
- run_preparing=false 
- function install () { 
- apt install -y $package_name 
- } 
- function uninstall () { 
- apt purge -y ${package_name} && apt autoremove 
- }
+name="Adapta-Theme"
+package_name="adapta-gtk-theme"
+description="マテリアルデザインに基づいたテーマパック"
+run_preparing=false
+install () {
+ pacapt -S $package_name --noconfirm
+}
+uninstall () {
+ pacapt -Rsn --noconfirm ${package_name}
+}

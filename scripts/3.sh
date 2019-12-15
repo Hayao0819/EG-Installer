@@ -1,10 +1,12 @@
-name="Baobab"
-package_name="baobab"
-description="ディスクのファイルサイズを確認します"
+name="Gparted"
+package_name="gparted"
+description="ディスクのパーティションを操作します"
 run_preparing=false
+
 install () {
  pacman -S --noconfirm ${package_name}
 }
+
 uninstall () {
  pacman -Rsn --noconfirm ${package_name}
 }
