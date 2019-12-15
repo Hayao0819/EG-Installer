@@ -1,4 +1,4 @@
-P_server="127.0.0.1:8888/list.sh"
+P_server="https://raw.githubusercontent.com/naoko1010hh/package-gui-installer/master/list.sh"
 wget -O "l" -S $P_server
 x=0
 while read line;do
