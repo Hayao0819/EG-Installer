@@ -147,9 +147,9 @@ if [[ $ID = "arch" || $ID = "arch32" ]]; then
         error 600 100 "存在しているユーザを入力してください。"
         ask_user
     done
+    echo -n 'aur_user=' > /tmp/user
+    echo "$aur_user" >> /tmp/user
 fi
-echo -n 'aur_user=' > /tmp/user
-echo "$aur_user" >> /tmp/user
 
 
 
