@@ -174,7 +174,9 @@ done
 warning 600 100 "スクリプトの読み込みを行います。これには時間がかかる場合があります。"
 
 gen_list () {
-    window --list --checklist \
+    window \
+        --list \
+        --checklist \
         --column="インストール" \
         --column="パッケージ" \
         --column="インストールされている" \
