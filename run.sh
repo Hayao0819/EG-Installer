@@ -86,7 +86,7 @@ function user_check () {
 #-- 変数定義 --#
 script_path=$(cd $(dirname $0) && pwd)/$(basename $0)
 script_dir=$(dirname $script_path)
-script_dir="$script_dir/scripts"
+script_dir="$script_dir/softwares"
 
 
 
@@ -109,6 +109,14 @@ fi
 #-- check_pkg関数のチェック --#
 if [[ ! $(type -t check_pkg) = "function" ]]; then
     error 600 300 "$(cd $(dirname $0) && pwd)/settings.confのcheck_pkgが正しくありません。"
+    exit 1
+fi
+
+
+
+#-- update_db関数のチェック --#
+if [[ ! $(type -t update_db) = "function" ]]; then
+    error 600 300 "$(cd $(dirname $0) && pwd)/settings.confのupdate_dbが正しくありません。"
     exit 1
 fi
 
@@ -190,7 +198,7 @@ selected_list=(${selected_list//'|'/ })
 
 
 #--- データベースの更新 --#
-pacman -Syy --noconfirm | loading 600 100 "リポジトリデータベースを更新しています。"
+update_db | loading 600 100 "リポジトリデータベースを更新しています。"
 
 
 
