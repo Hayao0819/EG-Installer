@@ -123,6 +123,14 @@ fi
 
 
 
+#-- upgrade_pkg関数のチェック --#
+if [[ ! $(type -t upgrade_pkg) = "function" ]]; then
+    error 600 300 "$(cd $(dirname $0) && pwd)/settings.confのupgrade_pkgが正しくありません。"
+    exit 1
+fi
+
+
+
 #-- AURユーザー --#
 source /etc/os-release
 if [[ $ID = "arch" || $ID = "arch32" ]]; then
@@ -153,120 +161,153 @@ fi
 
 
 
-#-- スクリプト読み込み --#
-scripts=($(ls $script_dir))
-for package in ${scripts[@]}; do
-    source $script_dir/$package
-    if [[ ! $(type -t install) = "function" ]]; then
-        error 600 100 "スクリプト$packageのinstall関数が間違っています。"
-        exit 1
-    fi
-    if [[ -z $name ]]; then
-        error 600 100 "スクリプト$packageにname変数が設定されていません。"
-        exit 1
-    fi
-done
+#-- インストールとアンインストール --#
+function install_and_uninstall () {
+    # スクリプト読み込み
+    scripts=($(ls $script_dir))
+    for package in ${scripts[@]}; do
+        source $script_dir/$package
+        if [[ ! $(type -t install) = "function" ]]; then
+            error 600 100 "スクリプト$packageのinstall関数が間違っています。"
+            exit 1
+        fi
+        if [[ -z $name ]]; then
+            error 600 100 "スクリプト$packageにname変数が設定されていません。"
+            exit 1
+        fi
+    done
 
 
 
-#-- リスト --#
+    # リスト
 
-window \
-    --warning \
-    --width="600" \
-    --height="100" \
-    --text="スクリプトの読み込みを行います。これにはしばらく時間がかかる場合があります。" \
-    --ok-label="読み込み開始"
-
-gen_list () {
     window \
-        --list \
-        --checklist \
-        --column="選択" \
-        --column="パッケージ" \
-        --column="インストールされている" \
-        --column="説明" \
-        --width="900" \
-        --height="500" \
-        --text="インストールまたは削除したいパッケージを選択してください。" \
-        $(
-            scripts=($(ls $script_dir))
-            for package in ${scripts[@]}; do
-                source $script_dir/$package
-                if [[ $(check_pkg $package_name) = 0 ]]; then
-                    status_display="はい"
-                else
-                    status_display="いいえ"
-                fi
-                echo "FALSE"
-                echo "$name"
-                echo "$status_display"
-                echo "$description"
-            done
-        )
+        --warning \
+        --width="600" \
+        --height="100" \
+        --text="スクリプトの読み込みを行います。これにはしばらく時間がかかる場合があります。" \
+        --ok-label="読み込み開始"
+
+    gen_list () {
+        window \
+            --list \
+            --checklist \
+            --column="選択" \
+            --column="パッケージ" \
+            --column="インストールされている" \
+            --column="説明" \
+            --width="900" \
+            --height="500" \
+            --text="インストールまたは削除したいパッケージを選択してください。" \
+            $(
+                scripts=($(ls $script_dir))
+                for package in ${scripts[@]}; do
+                    source $script_dir/$package
+                    if [[ $(check_pkg $package_name) = 0 ]]; then
+                        status_display="はい"
+                    else
+                        status_display="いいえ"
+                    fi
+                    echo "FALSE"
+                    echo "$name"
+                    echo "$status_display"
+                    echo "$description"
+                done
+            )
+    }
+
+    selected_list=$(gen_list; exit_code=$?)
+    selected_list=(${selected_list//'|'/ })
+    if [[ ! $exit_code = 0 && -z $selected_list ]]; then
+        $0
+        exit
+    fi
+
+
+    # データベースの更新
+    update_db | loading 600 100 "リポジトリデータベースを更新しています。"
+
+
+
+    # 実行
+
+    for selected in ${selected_list[@]}; do
+        # 選択パッケージに対応しているファイルを探す
+        scripts=($(ls $script_dir))
+        for package in ${scripts[@]}; do
+            set name
+            set description
+            set preparing
+            set install
+
+            source $script_dir/$package
+            if [[ $name = $selected ]]; then
+                break
+            fi
+            unset name
+            unset description
+            unset preparing
+            unset run_preparing
+            unset install
+        done
+
+        # インストール or アンインストール
+        source $script_dir/$package
+
+        if [[ $(check_pkg $package_name) = 1 ]]; then
+            window \
+                --question \
+                --text="パッケージ$nameをインストールします。よろしいですか？" \
+                --ok-label="続行する" \
+                --cancel-label="中断する" \
+                --width=600 \
+                --height=100
+            if $run_preparing; then
+                preparing | loading 600 100 "パッケージをビルドしています"
+            fi
+            install | loading 600 100 "パッケージ$nameをインストールしています"
+        else
+            window \
+                --question \
+                --text="パッケージ$nameをアンインストールします。よろしいですか？" \
+                --ok-label="続行する" \
+                --cancel-label="中断する" \
+                --width=600 \
+                --height=100
+            uninstall | loading 600 100 "パッケージ$nameをアンインストールしています。"
+        fi
+    done
+    info 600 100 "処理が完了しました。\n詳細はターミナルを参照してください。"
 }
-
-selected_list=$(gen_list)
-
-selected_list=(${selected_list//'|'/ })
-
-
-#--- データベースの更新 --#
-update_db | loading 600 100 "リポジトリデータベースを更新しています。"
 
 
 
 #-- 実行 --#
+set +eu
+unset run
+unset exit_code
 
-for selected in ${selected_list[@]}; do
-    # 選択パッケージに対応しているファイルを探す
-    scripts=($(ls $script_dir))
-    for package in ${scripts[@]}; do
-        set name
-        set description
-        set preparing
-        set install
-
-        source $script_dir/$package
-        if [[ $name = $selected ]]; then
-            break
-        fi
-        unset name
-        unset description
-        unset preparing
-        unset run_preparing
-        unset install
-    done
-
-    # インストール or アンインストール
-    source $script_dir/$package
-
-    if [[ $(check_pkg $package_name) = 1 ]]; then
-        window \
-            --question \
-            --text="パッケージ$nameをインストールします。よろしいですか？" \
-            --ok-label="続行する" \
-            --cancel-label="中断する" \
-            --width=600 \
-            --height=100
-        if $run_preparing; then
-            preparing | loading 600 100 "パッケージをビルドしています"
-        fi
-        install | loading 600 100 "パッケージ$nameをインストールしています"
-    else
-        window \
-            --question \
-            --text="パッケージ$nameをアンインストールします。よろしいですか？" \
-            --ok-label="続行する" \
-            --cancel-label="中断する" \
-            --width=600 \
-            --height=100
-        uninstall | loading 600 100 "パッケージ$nameをアンインストールしています。"
-    fi
-done
-info 600 100 "処理が完了しました。\n詳細はターミナルを参照してください。"
-
-
+run=$(
+    window \
+        --info \
+        --text="何を実行しますか？" \
+        --ok-label="終了する" \
+        --extra-button="パッケージの追加と削除" \
+        --extra-button="パッケージのアップグレード" \
+        --width="300" \
+        --height="100"
+)
+exit_code=$?
+case $exit_code in
+             0 ) exit 0 ;;
+             * ) :;;
+esac
+case $run in
+    "パッケージの追加と削除" ) install_and_uninstall ;;
+    "パッケージのアップグレード" ) upgrade_pkg | loading 600 100 "パッケージのアップグレードを行っています。" ;;
+    * ) exit 1 ;;
+esac
+set -eu
 
 #-- クリーンアップ --#
 # pacman -Qttdq | pacman -Rsn | loading 600 300 "不要なパッケージを削除しています。"
