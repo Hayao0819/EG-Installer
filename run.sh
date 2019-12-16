@@ -82,6 +82,14 @@ function user_check () {
     fi
 }
 
+# 設定上の関数チェック
+function check_func () {
+    if [[ ! $(type -t $1) = "function" ]]; then
+        error 600 300 "$(cd $(dirname $0) && pwd)/settings.confの$1が正しくありません。"
+        exit 1
+    fi
+}
+
 
 
 #-- 変数定義 --#
@@ -108,26 +116,17 @@ fi
 
 
 #-- check_pkg関数のチェック --#
-if [[ ! $(type -t check_pkg) = "function" ]]; then
-    error 600 300 "$(cd $(dirname $0) && pwd)/settings.confのcheck_pkgが正しくありません。"
-    exit 1
-fi
+check_func check_pkg
 
 
 
 #-- update_db関数のチェック --#
-if [[ ! $(type -t update_db) = "function" ]]; then
-    error 600 300 "$(cd $(dirname $0) && pwd)/settings.confのupdate_dbが正しくありません。"
-    exit 1
-fi
+check_func update_db
 
 
 
 #-- upgrade_pkg関数のチェック --#
-if [[ ! $(type -t upgrade_pkg) = "function" ]]; then
-    error 600 300 "$(cd $(dirname $0) && pwd)/settings.confのupgrade_pkgが正しくありません。"
-    exit 1
-fi
+check_func upgrade_pkg
 
 
 
