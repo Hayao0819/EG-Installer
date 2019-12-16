@@ -18,8 +18,10 @@ set -eu
 # 改行する場合は \n と記述してください。　
 
 
+
 #-- 設定読み込み --#
 source $(cd $(dirname $0) && pwd)/settings.conf
+
 
 
 #-- 関数定義 --#
@@ -307,6 +309,8 @@ case $run in
     * ) exit 1 ;;
 esac
 set -eu
+
+
 
 #-- クリーンアップ --#
 # pacman -Qttdq | pacman -Rsn | loading 600 300 "不要なパッケージを削除しています。"
