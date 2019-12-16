@@ -6,6 +6,16 @@ ArchLinux派生ディストリビューションを構築する際の初期セ�
 # 対応しているOS
 デフォルトではArchLinux用になっていますが、各スクリプトのpacmanの部分を他のパッケージ管理システムに書き換えることで他のディストリビューションでも動作します。ArchLinux以外で使用する場合はビルド用一般ユーザーを入力する部分がスキップされます。また、AURのビルドは使用できません。
 
+# 試しに使う
+ArchLinuxの場合は、簡単に試すことができます。  
+実効はコマンドラインからでも、ランチャー等からダブルクリックでも実行できます。  
+
+```bash
+git clone https://github.com/Hayao0819/package-gui-installer.git package-gui-installer
+cd package-gui-installer
+sudo ./run.sh
+```
+
 ## 注意
 pacman以外のパッケージマネージャの場合はsettings.confで、check_pkg関数を記述してください。dpkgの場合はpacmanのものをコメントアウトして、dpkgのものをアンコメントしてください。
 
