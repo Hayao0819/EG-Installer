@@ -96,7 +96,7 @@ function check_func () {
 
 #-- 変数定義 --#
 script_path=$(cd $(dirname $0) && pwd)/$(basename $0)
-script_dir=$(dirname $script_path)
+script_path=$(dirname $script_path)
 script_dir="$script_dir/softwares"
 
 
