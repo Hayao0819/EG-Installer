@@ -19,6 +19,12 @@ set -eu
 
 
 
+#-- 変数定義 --#
+current_path=$(cd $(dirname $0) && pwd)/$(basename $0)
+current_dir=$(dirname $current_path)
+
+
+
 #-- 設定読み込み --#
 source $(cd $(dirname $0) && pwd)/settings.conf
 
@@ -94,16 +100,9 @@ function check_func () {
 
 
 
-#-- 変数定義 --#
-script_path=$(cd $(dirname $0) && pwd)/$(basename $0)
-script_path=$(dirname $script_path)
-script_dir="$script_dir/softwares"
-
-
-
 #-- Rootチェック --#
 if [[ ! $UID = 0 ]]; then
-    pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY $script_path > /dev/null
+    pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY $current_path > /dev/null
     exit
 fi
 
