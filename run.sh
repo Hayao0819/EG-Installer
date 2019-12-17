@@ -292,8 +292,8 @@ run=$(
         --info \
         --text="何を実行しますか？" \
         --ok-label="終了する" \
-        --extra-button="パッケージの追加と削除" \
         --extra-button="パッケージのアップグレード" \
+        --extra-button="パッケージの追加と削除" \
         --width="300" \
         --height="100"
 )
