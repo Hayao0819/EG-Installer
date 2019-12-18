@@ -230,6 +230,7 @@ function install_and_uninstall () {
     selected_list=$(gen_list; exit_code=$?)
     selected_list=(${selected_list//'|'/ })
     if [[ ! $exit_code = 0 && -z $selected_list ]]; then
+        error 600 100 "パッケージが選択されませんでした。\nウィザードを再起動します。"
         $0
         exit
     fi
