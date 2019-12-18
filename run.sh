@@ -102,6 +102,8 @@ function check_func () {
 
 #-- Rootチェック --#
 if [[ ! $UID = 0 ]]; then
+    echo -n 'aur_user=' > /tmp/user
+    echo "$(whoami)" >> /tmp/user
     pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY $current_path > /dev/null
     exit
 fi
@@ -148,6 +150,8 @@ if [[ $ID = "arch" || $ID = "arch32" ]]; then
     if [[ -f /tmp/user ]]; then
         source /tmp/user
         [[ -z $aur_user ]] && ask_user
+    elif [[ ! $SUDO_USER = root ]]; then
+        aur_user=$SUDO_USER
     else
         ask_user
     fi
@@ -155,6 +159,9 @@ if [[ $ID = "arch" || $ID = "arch32" ]]; then
         error 600 100 "存在しているユーザを入力してください。"
         ask_user
     done
+    if [[ -f /tmp/user ]]; then
+        rm -f /tmp/user
+    fi
     echo -n 'aur_user=' > /tmp/user
     echo "$aur_user" >> /tmp/user
 fi
