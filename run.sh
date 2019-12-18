@@ -102,8 +102,10 @@ function check_func () {
 
 #-- Rootチェック --#
 if [[ ! $UID = 0 ]]; then
-    echo -n 'aur_user=' > /tmp/user
-    echo "$(whoami)" >> /tmp/user
+    if [[ ! -f /tmp/user || -w /tmp/user ]]; then
+        echo -n 'aur_user=' > /tmp/user
+        echo "$(whoami)" >> /tmp/user
+    fi
     pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY $current_path > /dev/null
     exit
 fi
