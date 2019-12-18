@@ -99,6 +99,15 @@ function check_func () {
     fi
 }
 
+# パッケージチェック
+function check_pkg () {
+    if [[ -n $(installed_list | grep -x $1) ]]; then 
+        printf 0
+    else
+        printf 1
+    fi
+}
+
 
 
 #-- ディスプレイチェック --#
@@ -123,13 +132,6 @@ fi
 
 #-- check_pkgについて --#
 check_func installed_list
-check_pkg () {
-    if [[ -n $(installed_list | grep -x $1) ]]; then 
-        printf 0
-    else
-        printf 1
-    fi
-}
 
 
 
