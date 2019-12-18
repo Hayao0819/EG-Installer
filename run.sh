@@ -100,6 +100,14 @@ function check_func () {
 
 
 
+#-- ディスプレイチェック --#
+if [[ -z $DISPLAY ]]; then
+    echo "GUI環境で起動してください。" >&2
+    exit 1
+fi
+
+
+
 #-- Rootチェック --#
 if [[ ! $UID = 0 ]]; then
     if [[ ! -f /tmp/user || -w /tmp/user ]]; then
@@ -108,14 +116,6 @@ if [[ ! $UID = 0 ]]; then
     fi
     pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY $current_path > /dev/null
     exit
-fi
-
-
-
-#-- ディスプレイチェック --#
-if [[ -z $DISPLAY ]]; then
-    echo "GUI環境で起動してください。" >&2
-    exit 1
 fi
 
 
