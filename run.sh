@@ -294,6 +294,17 @@ function install_and_uninstall () {
 
 
 
+#-- クリーンアップ --#
+function cleanup () {
+    if [[ -n $(pacman -Qttdq 2> /dev/null) ]]; then
+        pacman -Qttdq | pacman -Rsn | loading 600 300 "不要なパッケージを削除しています。"
+    else
+        info 600 100 "クリーンアップする必要はありません。"
+    fi
+}
+
+
+
 #-- 実行 --#
 set +eu
 unset run
@@ -309,6 +320,7 @@ run=$(
                 echo "--extra-button=保存されているAURユーザーデータを削除"
             fi
         ) \
+        --extra-button="パッケージのクリーンアップ" \
         --extra-button="パッケージのアップグレード" \
         --extra-button="パッケージの追加と削除" \
         --width="300" \
@@ -323,16 +335,10 @@ case $run in
     "パッケージの追加と削除" ) install_and_uninstall ;;
     "パッケージのアップグレード" ) upgrade_pkg | loading 600 100 "パッケージのアップグレードを行っています。" ;;
     "保存されているAURユーザーデータを削除" ) rm -f /tmp/user ; info 600 100 "保存されているユーザーを削除しました" ; exit 0;;
+    "パッケージのクリーンアップ" ) cleanup ;;
     * ) exit 1 ;;
 esac
 set -eu
-
-
-
-#-- クリーンアップ --#
-if [[ -n $(pacman -Qttdq 2> /dev/null) ]]; then
-    pacman -Qttdq | pacman -Rsn | loading 600 300 "不要なパッケージを削除しています。"
-fi
 
 
 
