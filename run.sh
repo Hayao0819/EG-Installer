@@ -151,9 +151,11 @@ if [[ $ID = "arch" || $ID = "arch32" ]]; then
     }
     if [[ -f /tmp/user ]]; then
         source /tmp/user
+        info 600 100 "/etc/userに保存されているユーザーを読み込みました。"
         [[ -z $aur_user ]] && ask_user
     elif [[ ! $SUDO_USER = root ]]; then
         aur_user=$SUDO_USER
+        info 600 100 "sudoで使用されていたユーザーを読み込みました。"
     else
         ask_user
     fi
@@ -301,6 +303,11 @@ run=$(
         --info \
         --text="何を実行しますか？" \
         --ok-label="終了する" \
+        $(
+            if [[ $ID = "arch" || $ID = "arch32" ]]; then
+                echo "--extra-button=保存されているAURユーザーデータを削除"
+            fi
+        ) \
         --extra-button="パッケージのアップグレード" \
         --extra-button="パッケージの追加と削除" \
         --width="300" \
@@ -314,6 +321,7 @@ esac
 case $run in
     "パッケージの追加と削除" ) install_and_uninstall ;;
     "パッケージのアップグレード" ) upgrade_pkg | loading 600 100 "パッケージのアップグレードを行っています。" ;;
+    "保存されているAURユーザーデータを削除" ) rm -f /tmp/user ; info 600 100 "保存されているユーザーを削除しました" ; exit 0;;
     * ) exit 1 ;;
 esac
 set -eu
