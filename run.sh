@@ -151,11 +151,11 @@ if [[ $ID = "arch" || $ID = "arch32" ]]; then
     }
     if [[ -f /tmp/user ]]; then
         source /tmp/user
-        info 600 100 "/etc/userに保存されているユーザーを読み込みました。"
+        info 600 100 "/etc/userに保存されているユーザー($aur_user)を使用します。"
         [[ -z $aur_user ]] && ask_user
     elif [[ ! $SUDO_USER = root ]]; then
         aur_user=$SUDO_USER
-        info 600 100 "sudoで使用されていたユーザーを読み込みました。"
+        info 600 100 "sudoで使用されていたユーザー($aur_user)を使用します。"
     else
         ask_user
     fi
