@@ -137,7 +137,7 @@ check_func installed_list
 
 #-- pacapt --#
 if [[ ! $ID = "arch" || ! $ID = "arch32" ]]; then
-    if [[ !-f $pacman ]]; then
+    if [[ ! -f $pacman ]]; then
         error 600 100 "$pacmanがありません。"
         exit 1
     fi
