@@ -27,7 +27,6 @@ current_dir=$(dirname $current_path)
 
 #-- 設定読み込み --#
 source $(cd $(dirname $0) && pwd)/settings.conf
-source /etc/os-release
 
 
 
@@ -99,15 +98,6 @@ function check_func () {
     fi
 }
 
-# パッケージチェック
-function check_pkg () {
-    if [[ -n $(installed_list | grep -x $1) ]]; then 
-        printf 0
-    else
-        printf 1
-    fi
-}
-
 
 
 #-- ディスプレイチェック --#
@@ -130,46 +120,23 @@ fi
 
 
 
-#-- check_pkgについて --#
-check_func installed_list
+#-- check_pkg関数のチェック --#
+check_func check_pkg
 
 
 
-#-- pacapt --#
-if [[ ! $ID = "arch" || ! $ID = "arch32" ]]; then
-    if [[ ! -f $pacman ]]; then
-        error 600 100 "$pacmanがありません。"
-        exit 1
-    fi
-else
-    pacman=pacman
-fi
+#-- update_db関数のチェック --#
+check_func update_db
 
 
 
-#-- クリーンアップ --#
-function cleanup () {
-    $pacman -Sc
-    $pacman -Sccc
-}
-
-
-
-#-- データベースのアップデート --#
-function update_db () {
-    $pacman -Syy
-}
-
-
-
-#-- パッケージのアップグレード --#
-function upgrade_pkg () {
-    $pacman -Syu
-}
+#-- upgrade_pkg関数のチェック --#
+check_func upgrade_pkg
 
 
 
 #-- AURユーザー --#
+source /etc/os-release
 if [[ $ID = "arch" || $ID = "arch32" ]]; then
     function ask_user () {
         export aur_user=$(window --entry --text="パッケージのビルドに使用する一般ユーザーを入力してください。")
@@ -323,6 +290,17 @@ function install_and_uninstall () {
         fi
     done
     info 600 100 "処理が完了しました。\n詳細はターミナルを参照してください。"
+}
+
+
+
+#-- クリーンアップ --#
+function cleanup () {
+    if [[ -n $(pacman -Qttdq 2> /dev/null) ]]; then
+        pacman -Qttdq | pacman -Rsn | loading 600 300 "不要なパッケージを削除しています。"
+    else
+        info 600 100 "クリーンアップする必要はありません。"
+    fi
 }
 
 
