@@ -330,7 +330,9 @@ set -eu
 
 
 #-- クリーンアップ --#
-# pacman -Qttdq | pacman -Rsn | loading 600 300 "不要なパッケージを削除しています。"
+if [[ -n $(pacman -Qttdq 2> /dev/null) ]]; then
+    pacman -Qttdq | pacman -Rsn | loading 600 300 "不要なパッケージを削除しています。"
+fi
 
 
 
