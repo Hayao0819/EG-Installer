@@ -33,6 +33,10 @@ source /etc/os-release
 
 #-- 関数定義 --#
 
+function call_me () {
+    bash ${0}
+}
+
 # ウィンドウの基本型
 function window () {
     zenity \
@@ -256,7 +260,7 @@ function install_and_uninstall () {
     selected_list=(${selected_list//'|'/ })
     if [[ ! $exit_code = 0 && -z $selected_list ]]; then
         error 600 100 "パッケージが選択されませんでした。\nウィザードを再起動します。"
-        $0
+        call_me
         exit
     fi
 
@@ -368,4 +372,4 @@ set -eu
 
 
 #-- 最初に戻る --#
-$0
+call_me
