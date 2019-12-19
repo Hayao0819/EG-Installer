@@ -120,18 +120,42 @@ fi
 
 
 
-#-- check_pkg関数のチェック --#
-check_func check_pkg
+#-- check_pkgについて --#
+check_func installed_list
 
 
 
-#-- update_db関数のチェック --#
-check_func update_db
+#-- pacapt --#
+if [[ ! $ID = "arch" || ! $ID = "arch32" ]]; then
+    if [[ ! -f $pacman ]]; then
+        error 600 100 "$pacmanがありません。"
+        exit 1
+    fi
+else
+    pacman=pacman
+fi
 
 
 
-#-- upgrade_pkg関数のチェック --#
-check_func upgrade_pkg
+#-- クリーンアップ --#
+function cleanup () {
+    $pacman -Sc --noconfirm
+    $pacman -Sccc --noconfirm
+}
+
+
+
+#-- データベースのアップデート --#
+function update_db () {
+    $pacman -Syy --noconfirm
+}
+
+
+
+#-- パッケージのアップグレード --#
+function upgrade_pkg () {
+    $pacman -Syu --noconfirm
+}
 
 
 

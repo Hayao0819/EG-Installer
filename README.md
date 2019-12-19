@@ -17,7 +17,7 @@ sudo ./run.sh
 ```
 
 ## 注意
-pacman以外のパッケージマネージャの場合はsettings.confで、check_pkg関数を記述してください。dpkgの場合はpacmanのものをコメントアウトして、dpkgのものをアンコメントしてください。
+pacman以外のパッケージマネージャの場合はsettings.confで、installed_list関数を記述してください。dpkgの場合はpacmanのものをコメントアウトして、dpkgのものをアンコメントしてください。
 
 # 依存関係
 - bash
