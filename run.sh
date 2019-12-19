@@ -149,22 +149,22 @@ fi
 
 #-- クリーンアップ --#
 function cleanup () {
-    $pacman -Sc
-    $pacman -Sccc
+    $pacman -Sc --noconfirm
+    $pacman -Sccc --noconfirm
 }
 
 
 
 #-- データベースのアップデート --#
 function update_db () {
-    $pacman -Syy
+    $pacman -Syy --noconfirm
 }
 
 
 
 #-- パッケージのアップグレード --#
 function upgrade_pkg () {
-    $pacman -Syu
+    $pacman -Syu --noconfirm
 }
 
 
