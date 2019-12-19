@@ -27,7 +27,6 @@ current_dir=$(dirname $current_path)
 
 #-- 設定読み込み --#
 source $(cd $(dirname $0) && pwd)/settings.conf
-source /etc/os-release
 
 
 
@@ -99,15 +98,6 @@ function check_func () {
     fi
 }
 
-# パッケージチェック
-function check_pkg () {
-    if [[ -n $(installed_list | grep -x $1) ]]; then 
-        printf 0
-    else
-        printf 1
-    fi
-}
-
 
 
 #-- ディスプレイチェック --#
@@ -170,6 +160,7 @@ function upgrade_pkg () {
 
 
 #-- AURユーザー --#
+source /etc/os-release
 if [[ $ID = "arch" || $ID = "arch32" ]]; then
     function ask_user () {
         export aur_user=$(window --entry --text="パッケージのビルドに使用する一般ユーザーを入力してください。")
@@ -238,7 +229,7 @@ function install_and_uninstall () {
             --checklist \
             --column="選択" \
             --column="パッケージ" \
-            --column="インストールされている" \
+            --column="インストール済" \
             --column="説明" \
             --width="900" \
             --height="500" \
@@ -323,6 +314,17 @@ function install_and_uninstall () {
         fi
     done
     info 600 100 "処理が完了しました。\n詳細はターミナルを参照してください。"
+}
+
+
+
+#-- クリーンアップ --#
+function cleanup () {
+    if [[ -n $(pacman -Qttdq 2> /dev/null) ]]; then
+        pacman -Qttdq | pacman -Rsn | loading 600 300 "不要なパッケージを削除しています。"
+    else
+        info 600 100 "クリーンアップする必要はありません。"
+    fi
 }
 
 
