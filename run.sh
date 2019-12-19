@@ -205,7 +205,7 @@ function install_and_uninstall () {
             --checklist \
             --column="選択" \
             --column="パッケージ" \
-            --column="インストールされている" \
+            --column="インストール済" \
             --column="説明" \
             --width="900" \
             --height="500" \
