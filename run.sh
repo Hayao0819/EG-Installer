@@ -27,6 +27,7 @@ current_dir=$(dirname $current_path)
 
 #-- 設定読み込み --#
 source $(cd $(dirname $0) && pwd)/settings.conf
+source /etc/os-release
 
 
 
