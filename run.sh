@@ -34,6 +34,7 @@ source /etc/os-release
 #-- 関数定義 --#
 
 function call_me () {
+    export recall=true
     bash ${0}
 }
 
@@ -155,39 +156,43 @@ fi
 
 
 #-- AURユーザー --#
-source /etc/os-release
-if [[ $ID = "arch" || $ID = "arch32" ]]; then
-    function ask_user () {
-        export aur_user=$(window --entry --text="パッケージのビルドに使用する一般ユーザーを入力してください。")
-        if [[ -z $aur_user ]]; then
-            error 600 100 "ユーザー名を入力してください。"
+set +eu
+if [[ ! $recall = true ]]; then
+    if [[ $ID = "arch" || $ID = "arch32" ]]; then
+        function ask_user () {
+            aur_user=$(window --entry --text="パッケージのビルドに使用する一般ユーザーを入力してください。")
+            if [[ -z $aur_user ]]; then
+                error 600 100 "ユーザー名を入力してください。"
+                ask_user
+            fi
+            if [[ $aur_user = "root" ]]; then
+                error 600 100 "一般ユーザーを入力してください。"
+                ask_user
+            fi
+        }
+        if [[ -f /tmp/user ]]; then
+            source /tmp/user
+            info 600 100 "/etc/userに保存されているユーザー($aur_user)を使用します。"
+            [[ -z $aur_user ]] && ask_user
+        elif [[ ! $SUDO_USER = root ]]; then
+            aur_user=$SUDO_USER
+            info 600 100 "sudoで使用されていたユーザー($aur_user)を使用します。"
+        else
             ask_user
         fi
-        if [[ $aur_user = "root" ]]; then
-            error 600 100 "一般ユーザーを入力してください。"
+        while [ $(user_check $aur_user) = 1 ]; do
+            error 600 100 "存在しているユーザを入力してください。"
             ask_user
+        done
+        if [[ -f /tmp/user ]]; then
+            rm -f /tmp/user
         fi
-    }
-    if [[ -f /tmp/user ]]; then
-        source /tmp/user
-        info 600 100 "/etc/userに保存されているユーザー($aur_user)を使用します。"
-        [[ -z $aur_user ]] && ask_user
-    elif [[ ! $SUDO_USER = root ]]; then
-        aur_user=$SUDO_USER
-        info 600 100 "sudoで使用されていたユーザー($aur_user)を使用します。"
-    else
-        ask_user
+        echo -n 'aur_user=' > /tmp/user
+        echo "$aur_user" >> /tmp/user
+        export aur_user=$aur_user
     fi
-    while [ $(user_check $aur_user) = 1 ]; do
-        error 600 100 "存在しているユーザを入力してください。"
-        ask_user
-    done
-    if [[ -f /tmp/user ]]; then
-        rm -f /tmp/user
-    fi
-    echo -n 'aur_user=' > /tmp/user
-    echo "$aur_user" >> /tmp/user
 fi
+set -eu
 
 
 
