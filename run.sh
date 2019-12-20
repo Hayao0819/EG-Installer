@@ -154,7 +154,8 @@ while getopts 'pah' arg; do
         p) installed_list () { ${pacman} -Q | awk '{print $1}'; }; warning 600 100 "pacman用のinstalled_listを使用します。" ;;
         a) installed_list () { ${pacman} -Q | awk '{print $2}'; }; warning 600 100 "apt用のinstalled_listを使用します。" ;;
         h) info 600 100 "==　デバッグ用　==\nこれはデバッグ用オプションです。通常利用はしないでください。\n\n-p　:　pacman用のinstalled_listを使用します。\n-a　:　apt用のinstalled_listを使用します。\n-h　:　このヘルプを表示します。"; exit 0;;
-        *):;;
+        ""):;;
+        * ) exit 1;;
     esac
 done
 
