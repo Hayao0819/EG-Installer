@@ -142,28 +142,6 @@ fi
 
 
 
-#-- クリーンアップ --#
-function cleanup () {
-    $pacman -Sc --noconfirm
-    $pacman -Sccc --noconfirm
-}
-
-
-
-#-- データベースのアップデート --#
-function update_db () {
-    $pacman -Syy --noconfirm
-}
-
-
-
-#-- パッケージのアップグレード --#
-function upgrade_pkg () {
-    $pacman -Syu --noconfirm
-}
-
-
-
 #-- AURユーザー --#
 source /etc/os-release
 if [[ $ID = "arch" || $ID = "arch32" ]]; then
@@ -198,6 +176,28 @@ if [[ $ID = "arch" || $ID = "arch32" ]]; then
     echo -n 'aur_user=' > /tmp/user
     echo "$aur_user" >> /tmp/user
 fi
+
+
+
+#-- クリーンアップ --#
+function cleanup () {
+    $pacman -Sc --noconfirm
+    $pacman -Sccc --noconfirm
+}
+
+
+
+#-- データベースのアップデート --#
+function update_db () {
+    $pacman -Syy --noconfirm
+}
+
+
+
+#-- パッケージのアップグレード --#
+function upgrade_pkg () {
+    $pacman -Syu --noconfirm
+}
 
 
 
