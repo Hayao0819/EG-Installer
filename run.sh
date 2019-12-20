@@ -37,7 +37,8 @@ current_dir=$(dirname $current_path)
 
 function call_me () {
     export recall=true
-    bash ${0}
+    options=$@
+    bash ${0} $options
 }
 
 # ウィンドウの基本型
@@ -140,9 +141,22 @@ if [[ ! $UID = 0 ]]; then
         echo -n 'aur_user=' > /tmp/user
         echo "$(whoami)" >> /tmp/user
     fi
-    pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY $current_path > /dev/null
+    options=$@
+    pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY $current_path $options> /dev/null
     exit
 fi
+
+
+
+#-- デバッグ用引数 --#
+while getopts 'pah' arg; do
+    case "${arg}" in
+        p) installed_list () { ${pacman} -Q | awk '{print $1}'; }; warning 600 100 "pacman用のinstalled_listを使用します。" ;;
+        a) installed_list () { ${pacman} -Q | awk '{print $2}'; }; warning 600 100 "apt用のinstalled_listを使用します。" ;;
+        h) info 600 100 "==　デバッグ用　==\nこれはデバッグ用オプションです。通常利用はしないでください。\n\n-p　:　pacman用のinstalled_listを使用します。\n-a　:　apt用のinstalled_listを使用します。\n-h　:　このヘルプを表示します。"; exit 0;;
+        *):;;
+    esac
+done
 
 
 
