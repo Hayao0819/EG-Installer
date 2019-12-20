@@ -198,8 +198,16 @@ set -eu
 
 #-- クリーンアップ --#
 function cleanup () {
-    $pacman -Sc --noconfirm
-    $pacman -Sccc --noconfirm
+    $pacman -Scc --noconfirm
+    if [[ ! $ID = "arch" || ! $ID = "arch32" ]]; then
+        if [[ -n $(pacman -Qttdq) ]]; then
+            $pacman -Qttdq | $pacman -Rsnc - | loading 600 100 "クリーンアップを実行中です"
+        else
+            info 600 100 "クリーンアップの必要はありません。"
+        fi
+    else
+        $pacman -Rsn --noconfirm | loading 600 100 "クリーンアップを実行中です"
+    fi
 }
 
 
@@ -336,17 +344,6 @@ function install_and_uninstall () {
         fi
     done
     info 600 100 "処理が完了しました。\n詳細はターミナルを参照してください。"
-}
-
-
-
-#-- クリーンアップ --#
-function cleanup () {
-    if [[ -n $(pacman -Qttdq 2> /dev/null) ]]; then
-        pacman -Qttdq | pacman -Rsn | loading 600 300 "不要なパッケージを削除しています。"
-    else
-        info 600 100 "クリーンアップする必要はありません。"
-    fi
 }
 
 
