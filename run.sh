@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 
+#-- 設定 --#
+settings=$(cd $(dirname $0) && pwd)/settings.conf
+
+
+
+#-- エラーチェック
 set -eu
+
+
 
 #===== 各基本ウィンドウの使い方 =====#
 # プログレスバー
@@ -22,12 +30,6 @@ set -eu
 #-- 変数定義 --#
 current_path=$(cd $(dirname $0) && pwd)/$(basename $0)
 current_dir=$(dirname $current_path)
-
-
-
-#-- 設定読み込み --#
-source $(cd $(dirname $0) && pwd)/settings.conf
-source /etc/os-release
 
 
 
@@ -123,6 +125,15 @@ fi
 
 
 
+#-- 設定読み込み --#
+if [[ ! -f $settings ]]; then
+    error 600 100 "$settingsが存在しません。"
+fi
+source $settings
+source /etc/os-release
+
+
+
 #-- Rootチェック --#
 if [[ ! $UID = 0 ]]; then
     if [[ ! -f /tmp/user || -w /tmp/user ]]; then
@@ -136,7 +147,7 @@ fi
 
 
 #-- check_pkgについて --#
-check_func installed_list "$(cd $(dirname $0) && pwd)/settings.confで、installed_listをディストリビューションごとに設定してください。\nわからない場合は、ディストリビューションの配布元へ連絡してください。"
+check_func installed_list "$settingsで、installed_listをディストリビューションごとに設定してください。\nわからない場合は、ディストリビューションの配布元へ連絡してください。"
 
 
 
