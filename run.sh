@@ -99,7 +99,7 @@ function user_check () {
 # 設定上の関数チェック
 function check_func () {
     if [[ ! $(type -t $1) = "function" ]]; then
-        error 600 300 "$(cd $(dirname $0) && pwd)/settings.confの$1が正しくありません。"
+        error 800 100 "$2"
         exit 1
     fi
 }
@@ -136,7 +136,7 @@ fi
 
 
 #-- check_pkgについて --#
-check_func installed_list
+check_func installed_list "$(cd $(dirname $0) && pwd)/settings.confで、installed_listをディストリビューションごとに設定してください。\nわからない場合は、ディストリビューションの配布元へ連絡してください。"
 
 
 
