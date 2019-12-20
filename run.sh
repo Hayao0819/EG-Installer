@@ -139,21 +139,6 @@ fi
 
 
 
-#-- デバッグ用引数 --#
-while getopts 'pahs:' arg; do
-    case "${drg}" in
-        p) installed_list () { ${pacman} -Q | awk '{print $1}'; }; warning 600 100 "pacman用のinstalled_listを使用します。" ;;
-        d) installed_list () { ${pacman} -Q | awk '{print $2}'; }; warning 600 100 "dpkg,apt用のinstalled_listを使用します。" ;;
-        h) info 600 100 "==　デバッグ用　==\nこれはデバッグ用オプションです。通常利用はしないでください。\n\n-p　:　pacman用のinstalled_listを使用します。\n-a　:　apt用のinstalled_listを使用します。\n-h　:　このヘルプを表示します。"; exit 0;;
-        s) settings=${OPTARG};;
-        a) export ID=arch;;
-        ""):;;
-        * ) exit 1;;
-    esac
-done
-
-
-
 #-- 設定読み込み --#
 set +eu
 if [[ ! -f $settings ]]; then
@@ -164,6 +149,21 @@ if [[ -z $ID ]]; then
     source /etc/os-release
 fi
 set -eu
+
+
+
+#-- デバッグ用引数 --#
+while getopts 'adhp' arg; do
+    case "${arg}" in
+        a) export ID=arch;;
+        d) installed_list () { ${pacman} -Q | awk '{print $2}'; }; warning 600 100 "dpkg,apt用のinstalled_listを使用します。" ;;
+        h) info 600 100 "==　デバッグ用　==\nこれはデバッグ用オプションです。通常利用はしないでください。\n\n-a　:　ArchLinuxモードを強制的に有効化します。\n-d　:　dpkg,apt用のinstalled_listを使用します。\n-h　:　このヘルプを表示します。\n-p　:　pacman用のinstalled_listを使用します。"; exit 0;;
+        p) installed_list () { ${pacman} -Q | awk '{print $1}'; }; warning 600 100 "pacman用のinstalled_listを使用します。" ;;
+        ""):;;
+        * ) exit 1;;
+    esac
+done
+
 
 
 #-- check_pkgについて --#
