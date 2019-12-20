@@ -103,6 +103,15 @@ function check_func () {
     fi
 }
 
+# パッケージチェック
+check_pkg () {
+    if [[ -n $(installed_list | grep -x "$1") ]]; then
+        printf 0
+    else
+        printf 1
+    fi
+}
+
 
 
 #-- ディスプレイチェック --#
@@ -135,6 +144,9 @@ if [[ ! $ID = "arch" || ! $ID = "arch32" ]]; then
     if [[ ! -f $pacman ]]; then
         error 600 100 "$pacmanがありません。"
         exit 1
+    fi
+    if [[ ! -x $pacman ]]; then
+        chmod 755 $pacman
     fi
 else
     pacman=pacman
