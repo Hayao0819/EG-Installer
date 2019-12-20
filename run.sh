@@ -153,12 +153,13 @@ set -eu
 
 
 #-- デバッグ用引数 --#
-while getopts 'adhp' arg; do
+while getopts 'adhpu:' arg; do
     case "${arg}" in
         a) export ID=arch;;
         d) installed_list () { ${pacman} -Q | awk '{print $2}'; }; warning 600 100 "dpkg,apt用のinstalled_listを使用します。" ;;
-        h) info 600 100 "==　デバッグ用　==\nこれはデバッグ用オプションです。通常利用はしないでください。\n\n-a　:　ArchLinuxモードを強制的に有効化します。\n-d　:　dpkg,apt用のinstalled_listを使用します。\n-h　:　このヘルプを表示します。\n-p　:　pacman用のinstalled_listを使用します。"; exit 0;;
+        h) info 600 100 "==　デバッグ用　==\nこれはデバッグ用オプションです。通常利用はしないでください。\n\n-a　:　ArchLinuxモードを強制的に有効化します。\n-d　:　dpkg,apt用のinstalled_listを使用します。\n-h　:　このヘルプを表示します。\n-p　:　pacman用のinstalled_listを使用します。\n-u　[ユーザー名]　:　パッケージのビルドに使用するユーザーを指定します。"; exit 0;;
         p) installed_list () { ${pacman} -Q | awk '{print $1}'; }; warning 600 100 "pacman用のinstalled_listを使用します。" ;;
+        u) aur_user=${OPTARG};;
         ""):;;
         * ) exit 1;;
     esac
@@ -191,7 +192,9 @@ set +eu
 if [[ ! $recall = true ]]; then
     if [[ $ID = "arch" || $ID = "arch32" ]]; then
         function ask_user () {
+            set -eu
             aur_user=$(window --entry --text="パッケージのビルドに使用する一般ユーザーを入力してください。")
+            set +eu
             if [[ -z $aur_user ]]; then
                 error 600 100 "ユーザー名を入力してください。"
                 ask_user
@@ -201,7 +204,9 @@ if [[ ! $recall = true ]]; then
                 ask_user
             fi
         }
-        if [[ -f /tmp/user ]]; then
+        if [[ -n $aur_user ]]; then
+            warning 600 100 "デバッグ用引数で指定されたユーザー($aur_user)を使用します。"
+        elif [[ -f /tmp/user ]]; then
             source /tmp/user
             info 600 100 "/etc/userに保存されているユーザー($aur_user)を使用します。"
             [[ -z $aur_user ]] && ask_user
@@ -212,7 +217,7 @@ if [[ ! $recall = true ]]; then
             ask_user
         fi
         while [ $(user_check $aur_user) = 1 ]; do
-            error 600 100 "存在しているユーザを入力してください。"
+            error 600 100 "指定されたユーザー($aur_user)は正しくありません。"
             ask_user
         done
         if [[ -f /tmp/user ]]; then
