@@ -8,13 +8,11 @@ ArchLinux派生ディストリビューションを構築する際の初期セ�
 
 # 試しに使う
 ArchLinuxの場合は、簡単に試すことができます。  
-実効はコマンドラインからでも、ランチャー等からダブルクリックでも実行できます。  
 
 ```bash
 git clone https://github.com/Hayao0819/package-gui-installer.git package-gui-installer
-cd package-gui-installer
-sudo ./run.sh
 ```
+ダウンロード後、設定ファイル（settings.conf）でディストリビューションごとの設定をしたあとにrun.shを実行してください。
 
 ## 注意
 pacman以外のパッケージマネージャの場合はsettings.confで、installed_list関数を記述してください。dpkgの場合はpacmanのものをコメントアウトして、dpkgのものをアンコメントしてください。
