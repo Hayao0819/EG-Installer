@@ -126,15 +126,6 @@ fi
 
 
 
-#-- 設定読み込み --#
-if [[ ! -f $settings ]]; then
-    error 600 100 "$settingsが存在しません。"
-fi
-source $settings
-source /etc/os-release
-
-
-
 #-- Rootチェック --#
 if [[ ! $UID = 0 ]]; then
     if [[ ! -f /tmp/user || -w /tmp/user ]]; then
@@ -149,15 +140,25 @@ fi
 
 
 #-- デバッグ用引数 --#
-while getopts 'pah' arg; do
+while getopts 'pahs:' arg; do
     case "${arg}" in
         p) installed_list () { ${pacman} -Q | awk '{print $1}'; }; warning 600 100 "pacman用のinstalled_listを使用します。" ;;
         a) installed_list () { ${pacman} -Q | awk '{print $2}'; }; warning 600 100 "apt用のinstalled_listを使用します。" ;;
         h) info 600 100 "==　デバッグ用　==\nこれはデバッグ用オプションです。通常利用はしないでください。\n\n-p　:　pacman用のinstalled_listを使用します。\n-a　:　apt用のinstalled_listを使用します。\n-h　:　このヘルプを表示します。"; exit 0;;
+        s) settings=${OPTARG}
         ""):;;
         * ) exit 1;;
     esac
 done
+
+
+
+#-- 設定読み込み --#
+if [[ ! -f $settings ]]; then
+    error 600 100 "$settingsが存在しません。"
+fi
+source $settings
+source /etc/os-release
 
 
 
