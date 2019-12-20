@@ -141,11 +141,12 @@ fi
 
 #-- デバッグ用引数 --#
 while getopts 'pahs:' arg; do
-    case "${arg}" in
+    case "${drg}" in
         p) installed_list () { ${pacman} -Q | awk '{print $1}'; }; warning 600 100 "pacman用のinstalled_listを使用します。" ;;
-        a) installed_list () { ${pacman} -Q | awk '{print $2}'; }; warning 600 100 "apt用のinstalled_listを使用します。" ;;
+        d) installed_list () { ${pacman} -Q | awk '{print $2}'; }; warning 600 100 "dpkg,apt用のinstalled_listを使用します。" ;;
         h) info 600 100 "==　デバッグ用　==\nこれはデバッグ用オプションです。通常利用はしないでください。\n\n-p　:　pacman用のinstalled_listを使用します。\n-a　:　apt用のinstalled_listを使用します。\n-h　:　このヘルプを表示します。"; exit 0;;
-        s) settings=${OPTARG}
+        s) settings=${OPTARG};;
+        a) export ID=arch;;
         ""):;;
         * ) exit 1;;
     esac
@@ -154,12 +155,15 @@ done
 
 
 #-- 設定読み込み --#
+set +eu
 if [[ ! -f $settings ]]; then
     error 600 100 "$settingsが存在しません。"
 fi
 source $settings
-source /etc/os-release
-
+if [[ -z $ID ]]; then
+    source /etc/os-release
+fi
+set -eu
 
 
 #-- check_pkgについて --#
