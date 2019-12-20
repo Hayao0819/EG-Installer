@@ -199,7 +199,7 @@ set -eu
 #-- クリーンアップ --#
 function cleanup () {
     $pacman -Scc --noconfirm
-    if [[ ! $ID = "arch" || ! $ID = "arch32" ]]; then
+    if [[ $ID = "arch" || $ID = "arch32" ]]; then
         if [[ -n $(pacman -Qttdq) ]]; then
             $pacman -Qttdq | $pacman -Rsnc - | loading 600 100 "クリーンアップを実行中です"
         else
