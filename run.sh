@@ -153,17 +153,19 @@ set -eu
 
 
 #-- デバッグ用引数 --#
+set +eu
 while getopts 'adhpu:' arg; do
     case "${arg}" in
         a) export ID=arch;;
-        d) installed_list () { ${pacman} -Q | awk '{print $2}'; }; warning 600 100 "dpkg,apt用のinstalled_listを使用します。" ;;
+        d) installed_list () { ${pacman} -Q | awk '{print $2}'; }; [[ ! $recall = true ]] && warning 600 100 "dpkg,apt用のinstalled_listを使用します。" ;;
         h) info 600 100 "==　デバッグ用　==\nこれはデバッグ用オプションです。通常利用はしないでください。\n\n-a　:　ArchLinuxモードを強制的に有効化します。\n-d　:　dpkg,apt用のinstalled_listを使用します。\n-h　:　このヘルプを表示します。\n-p　:　pacman用のinstalled_listを使用します。\n-u　[ユーザー名]　:　パッケージのビルドに使用するユーザーを指定します。"; exit 0;;
-        p) installed_list () { ${pacman} -Q | awk '{print $1}'; }; warning 600 100 "pacman用のinstalled_listを使用します。" ;;
+        p) installed_list () { ${pacman} -Q | awk '{print $1}'; }; [[ ! $recall = true ]] && warning 600 100 "pacman用のinstalled_listを使用します。" ;;
         u) aur_user=${OPTARG};;
         ""):;;
         * ) exit 1;;
     esac
 done
+set -eu
 
 
 
