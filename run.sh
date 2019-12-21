@@ -116,6 +116,17 @@ check_pkg () {
     fi
 }
 
+# 値の初期化
+function clear_variable () {
+    unset name
+    unset package_name
+    unset description
+    unset run_preparing
+    unset install
+    unset uninstall
+    unset preparing
+}
+
 
 
 #-- ディスプレイチェック --#
@@ -269,14 +280,31 @@ function install_and_uninstall () {
     scripts=($(ls $script_dir))
     for package in ${scripts[@]}; do
         source $script_dir/$package
-        if [[ ! $(type -t install) = "function" ]]; then
-            error 600 100 "スクリプト$packageのinstall関数が間違っています。"
-            exit 1
+
+        function check_func () {
+            if [[ ! $(type -t $1) = "function" ]]; then
+                error 600 100 "スクリプト$packageの$1関数が間違っています。"
+                exit 1
+            fi
+        }
+        function check_variable () {
+            eval variable=$1
+            if [[ -z $variable ]]; then
+                error 600 100 "スクリプト$packageに$variable変数が設定されていません。"
+                exit 1
+            fi
+        }
+
+        check_variable name
+        check_variable package_name
+        check_variable description
+        check_variable run_preparing
+        check_func install
+        check_func uninstall
+        if $run_preparing; then
+            check_func preparing
         fi
-        if [[ -z $name ]]; then
-            error 600 100 "スクリプト$packageにname変数が設定されていません。"
-            exit 1
-        fi
+        clear_variable
     done
 
 
@@ -347,11 +375,7 @@ function install_and_uninstall () {
             if [[ $name = $selected ]]; then
                 break
             fi
-            unset name
-            unset description
-            unset preparing
-            unset run_preparing
-            unset install
+            clear_variable
         done
 
         # インストール or アンインストール
