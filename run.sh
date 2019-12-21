@@ -30,6 +30,7 @@ set -eu
 #-- 変数定義 --#
 current_path=$(cd $(dirname $0) && pwd)/$(basename $0)
 current_dir=$(dirname $current_path)
+options=$@
 
 
 
@@ -37,7 +38,6 @@ current_dir=$(dirname $current_path)
 
 function call_me () {
     export recall=true
-    options=$@
     bash ${0} $options
 }
 
@@ -132,7 +132,6 @@ if [[ ! $UID = 0 ]]; then
         echo -n 'aur_user=' > /tmp/user
         echo "$(whoami)" >> /tmp/user
     fi
-    options=$@
     pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY $current_path $options> /dev/null
     exit
 fi
@@ -323,7 +322,7 @@ function install_and_uninstall () {
     selected_list=(${selected_list//'|'/ })
     if [[ ! $exit_code = 0 && -z $selected_list ]]; then
         error 600 100 "パッケージが選択されませんでした。\nウィザードを再起動します。"
-        call_me $@
+        call_me $options
         exit
     fi
 
@@ -424,4 +423,4 @@ set -eu
 
 
 #-- 最初に戻る --#
-call_me $@
+call_me $options
