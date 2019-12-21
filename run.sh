@@ -207,14 +207,14 @@ if [[ ! $recall = true ]]; then
             fi
         }
         if [[ -n $aur_user ]]; then
-            warning 600 100 "デバッグ用引数で指定されたユーザー($aur_user)を使用します。"
+            warning 600 100 "デバッグ用引数で指定されたユーザー($aur_user)を使用します。この設定は/tmp/userに保存されます。"
         elif [[ -f /tmp/user ]]; then
             source /tmp/user
             info 600 100 "/etc/userに保存されているユーザー($aur_user)を使用します。"
             [[ -z $aur_user ]] && ask_user
         elif [[ ! $SUDO_USER = root ]]; then
             aur_user=$SUDO_USER
-            info 600 100 "sudoで使用されていたユーザー($aur_user)を使用します。"
+            info 600 100 "sudoで使用されていたユーザー($aur_user)を使用します。この設定は/tmp/userに保存されます。"
         else
             ask_user
         fi
