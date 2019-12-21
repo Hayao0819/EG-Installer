@@ -321,7 +321,7 @@ function install_and_uninstall () {
     selected_list=(${selected_list//'|'/ })
     if [[ ! $exit_code = 0 && -z $selected_list ]]; then
         error 600 100 "パッケージが選択されませんでした。\nウィザードを再起動します。"
-        call_me
+        call_me $@
         exit
     fi
 
@@ -422,4 +422,4 @@ set -eu
 
 
 #-- 最初に戻る --#
-call_me
+call_me $@
