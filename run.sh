@@ -32,7 +32,8 @@ settings=$(cd $(dirname $0) && pwd)/config
 version=1.4
 
 
-#-- エラーチェック
+
+#-- エラーチェック --#
 set -eu
 
 
@@ -458,12 +459,14 @@ set +eu
 unset run
 unset exit_code
 
+# メニュー
 run=$(
     window \
         --info \
         --text="何を実行しますか？" \
         --ok-label="終了する" \
         $(
+            # ArchLinux用メニュー
             if [[ $ID = "arch" || $ID = "arch32" ]]; then
                 echo "--extra-button=保存されているAURユーザーデータを削除"
             fi
