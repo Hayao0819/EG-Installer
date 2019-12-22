@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #-- 設定 --#
-settings=$(cd $(dirname $0) && pwd)/settings.conf
+settings=$(cd $(dirname $0) && pwd)/config
 
 
 
