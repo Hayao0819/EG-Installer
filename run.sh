@@ -323,7 +323,7 @@ function upgrade_pkg () {
 #-- インストールとアンインストール --#
 function install_and_uninstall () {
     # スクリプト読み込み
-    scripts=($(ls $script_dir))
+    scripts=($(cd $script_dir; ls *.entry; cd ..))
     for package in ${scripts[@]}; do
         source $script_dir/$package
 
@@ -410,7 +410,7 @@ function install_and_uninstall () {
 
     for selected in ${selected_list[@]}; do
         # 選択パッケージに対応しているファイルを探す
-        scripts=($(ls $script_dir))
+        scripts=($(cd $script_dir; ls *.entry; cd ..))
         for package in ${scripts[@]}; do
             set name
             set description
