@@ -164,15 +164,17 @@ set -eu
 
 #-- デバッグ用引数 --#
 set +eu
-while getopts 'adhpu:' arg; do
+while getopts 'adhps:t:u:' arg; do
     case "${arg}" in
         a) export ID=arch;;
-        d) installed_list () { ${pacman} -Q | awk '{print $2}'; }; [[ ! $recall = true ]] && warning 600 100 "dpkg,apt用のinstalled_listを使用します。" ;;
-        h) info 600 100 "==　デバッグ用　==\nこれはデバッグ用オプションです。通常利用はしないでください。\n\n-a　:　ArchLinuxモードを強制的に有効化します。\n-d　:　dpkg,apt用のinstalled_listを使用します。\n-h　:　このヘルプを表示します。\n-p　:　pacman用のinstalled_listを使用します。\n-u　[ユーザー名]　:　パッケージのビルドに使用するユーザーを指定します。"; exit 0;;
-        p) installed_list () { ${pacman} -Q | awk '{print $1}'; }; [[ ! $recall = true ]] && warning 600 100 "pacman用のinstalled_listを使用します。" ;;
+        d) installed_list () { ${pacman} -Q | awk '{print $2}'; }; [[ ! $recall = true ]] && echo "dpkg,apt用のinstalled_listを使用します。" > /dev/null ;;
+        h) info 600 100 "==　デバッグ用　==\nこれはデバッグ用オプションです。通常利用はしないでください。\n\n-a　:　ArchLinuxモードを強制的に有効化します。\n-d　:　dpkg,apt用のinstalled_listを使用します。\n-h　:　このヘルプを表示します。このオプションが有効な場合、他のオプションは無視されます。\n-p　:　pacman用のinstalled_listを使用します。\n-s　[スクリプトディレクトリ]　:　スクリプトディレクトリを指定します。\n-t　[　ウィンドウタイトル　]　:　ウィンドウタイトルを指定します。\n-u　[　　　ユーザー名　　　]　:　パッケージのビルドに使用するユーザーを指定します。"; exit 0;;
+        p) installed_list () { ${pacman} -Q | awk '{print $1}'; }; [[ ! $recall = true ]] && echo "pacman用のinstalled_listを使用します。" > /dev/null ;;
+        s) script_dir=${OPTARG};;
+        t) window_text=${OPTARG};;
         u) aur_user=${OPTARG};;
-        ""):;;
-        * ) exit 1;;
+        "") : ;;
+        #* ) exit 1;;
     esac
 done
 set -eu
@@ -181,6 +183,14 @@ set -eu
 
 #-- check_pkgについて --#
 check_func installed_list "$settingsで、installed_listをディストリビューションごとに設定してください。\nわからない場合は、ディストリビューションの配布元へ連絡してください。"
+
+
+
+#-- スクリプトディレクトリのチェック --#
+if [[ ! -d $script_dir ]]; then
+    error 600 100 "$script_dirが存在しません。"
+    exit
+fi
 
 
 
