@@ -10,7 +10,7 @@ ArchLinux派生ディストリビューションを構築する際の初期セ�
 ArchLinuxの場合は、簡単に試すことができます。  
 
 ```bash
-git clone https://github.com/Hayao0819/package-gui-installer.git package-gui-installer
+git clone https://github.com/Hayao0819/EG-Installer.git package-gui-installer
 ```
 ダウンロード後、設定ファイル（settings.conf）でディストリビューションごとの設定をしたあとにrun.shを実行してください。
 
@@ -70,4 +70,4 @@ yayの`name`をAURのパッケージ名へ、`description`をそのパッケー�
 AURにないパッケージで`makepkg`する必要がある場合は、最初に入力するビルド用一般ユーザーが格納されている変数${aur_user}を使用して外部のビルドスクリプトをsuで呼び出してビルドする必要があります。  
 
 # ディストリビューターの方へ
-`run.sh`を`/usr/bin`に、名前を変更して入れ、それ以外のファイルは`/etc/package-gui-installer`に入れ、設定の値等を変更することをおすすめします。これは、Linuxでの標準的な配置に従うためです。変更する値は、`run.sh`の設定ファイルへのパスとスクリプトディレクトリへのパスです。
+`run.sh`を`/usr/bin`に、名前を変更して入れ、それ以外のファイルは`/etc/eg-installer`に入れ、設定の値等を変更することをおすすめします。これは、Linuxでの標準的な配置に従うためです。変更する値は、`run.sh`の設定ファイルへのパスとスクリプトディレクトリへのパスです。

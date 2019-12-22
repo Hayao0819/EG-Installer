@@ -171,17 +171,29 @@ fi
 
 
 
+#-- バージョン情報 --#
+function version () {
+    window \
+        --info \
+        --width="600" \
+        --height="100" \
+        --text="＝＝　EG-Intaler　＝＝\nVersion:　1.4\nYamada　Hayao　shun819.mail@gmail.com"
+}
+
+
+
 #-- デバッグ用引数 --#
 set +eu
-while getopts 'adhps:t:u:' arg; do
+while getopts 'adhps:t:u:v' arg; do
     case "${arg}" in
         a) export ID=arch;;
         d) installed_list () { ${pacman} -Q | awk '{print $2}'; }; [[ ! $recall = true ]] && echo "dpkg,apt用のinstalled_listを使用します。" > /dev/null ;;
-        h) info 600 100 "==　デバッグ用　==\nこれはデバッグ用オプションです。通常利用はしないでください。\n\n-a　:　ArchLinuxモードを強制的に有効化します。\n-d　:　dpkg,apt用のinstalled_listを使用します。\n-h　:　このヘルプを表示します。このオプションが有効な場合、他のオプションは無視されます。\n-p　:　pacman用のinstalled_listを使用します。\n-s　[スクリプトディレクトリ]　:　スクリプトディレクトリを指定します。\n-t　[　ウィンドウタイトル　]　:　ウィンドウタイトルを指定します。\n-u　[　　　ユーザー名　　　]　:　パッケージのビルドに使用するユーザーを指定します。"; exit 0;;
+        h) info 600 100 "==　デバッグ用　==\nこれはデバッグ用オプションです。通常利用はしないでください。\n\n-a　:　ArchLinuxモードを強制的に有効化します。\n-d　:　dpkg,apt用のinstalled_listを使用します。\n-h　:　このヘルプを表示します。このオプションが有効な場合、他のオプションは無視されます。\n-p　:　pacman用のinstalled_listを使用します。\n-v　:　バージョン情報を表示します。\n-s　[スクリプトディレクトリ]　:　スクリプトディレクトリを指定します。\n-t　[　ウィンドウタイトル　]　:　ウィンドウタイトルを指定します。\n-u　[　　　ユーザー名　　　]　:　パッケージのビルドに使用するユーザーを指定します。\n"; exit 0;;
         p) installed_list () { ${pacman} -Q | awk '{print $1}'; }; [[ ! $recall = true ]] && echo "pacman用のinstalled_listを使用します。" > /dev/null ;;
         s) script_dir=${OPTARG};;
         t) window_text=${OPTARG};;
         u) aur_user=${OPTARG};;
+        v) version;exit 0;;
         "") : ;;
         #* ) exit 1;;
     esac
