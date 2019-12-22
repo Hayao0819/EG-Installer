@@ -42,6 +42,7 @@ set -eu
 current_path=$(cd $(dirname $0) && pwd)/$(basename $0)
 current_dir=$(dirname $current_path)
 options=$@
+unset run
 
 
 
@@ -195,12 +196,13 @@ function show_version () {
 
 #-- デバッグ用引数 --#
 set +eu
-while getopts 'adhps:t:u:v' arg; do
+while getopts 'adhpr:s:t:u:v' arg; do
     case "${arg}" in
         a) export ID=arch;;
         d) installed_list () { ${pacman} -Q | awk '{print $2}'; }; [[ ! $recall = true ]] && echo "dpkg,apt用のinstalled_listを使用します。" > /dev/null ;;
         h) info 600 100 "==　デバッグ用　==\nこれはデバッグ用オプションです。通常利用はしないでください。\n$settingsを変更することで値を保存できます。\n\n-a　:　ArchLinuxモードを強制的に有効化します。\n-d　:　dpkg,apt用のinstalled_listを使用します。\n-h　:　このヘルプを表示します。このオプションが有効な場合、他のオプションは無視されます。\n-p　:　pacman用のinstalled_listを使用します。\n-v　:　バージョン情報を表示します。\n-s　[スクリプトディレクトリ]　:　スクリプトディレクトリを指定します。\n-t　[　ウィンドウタイトル　]　:　ウィンドウタイトルを指定します。\n-u　[　　　ユーザー名　　　]　:　パッケージのビルドに使用するユーザーを指定します。\n"; exit 0;;
         p) installed_list () { ${pacman} -Q | awk '{print $1}'; }; [[ ! $recall = true ]] && echo "pacman用のinstalled_listを使用します。" > /dev/null ;;
+        r) direct_execution=true;if [[ ! $recall = true ]]; then case ${OPTARG} in 1) run="パッケージのクリーンアップ";; 2) run="パッケージのアップグレード";; 3) run="パッケージの追加と削除" ;; esac; else exit 0; fi;;
         s) script_dir=${OPTARG};;
         t) window_text=${OPTARG};;
         u) aur_user=${OPTARG};;
@@ -456,32 +458,33 @@ function install_and_uninstall () {
 
 #-- 実行 --#
 set +eu
-unset run
 unset exit_code
 
 # メニュー
-run=$(
-    window \
-        --info \
-        --text="何を実行しますか？" \
-        --ok-label="終了する" \
-        $(
-            # ArchLinux用メニュー
-            if [[ $ID = "arch" || $ID = "arch32" ]]; then
-                echo "--extra-button=保存されているAURユーザーデータを削除"
-            fi
-        ) \
-        --extra-button="パッケージのクリーンアップ" \
-        --extra-button="パッケージのアップグレード" \
-        --extra-button="パッケージの追加と削除" \
-        --width="300" \
-        --height="100"
-)
-exit_code=$?
-case $exit_code in
-             0 ) exit 0 ;;
-             * ) :;;
-esac
+if [[ ! $direct_execution = true ]]; then
+    run=$(
+        window \
+            --info \
+            --text="何を実行しますか？" \
+            --ok-label="終了する" \
+            $(
+                # ArchLinux用メニュー
+                if [[ $ID = "arch" || $ID = "arch32" ]]; then
+                    echo "--extra-button=保存されているAURユーザーデータを削除"
+                fi
+            ) \
+            --extra-button="パッケージのクリーンアップ" \
+            --extra-button="パッケージのアップグレード" \
+            --extra-button="パッケージの追加と削除" \
+            --width="300" \
+            --height="100"
+    )
+    exit_code=$?
+    case $exit_code in
+                0 ) exit 0 ;;
+                * ) :;;
+    esac
+fi
 case $run in
     "パッケージの追加と削除" ) install_and_uninstall ;;
     "パッケージのアップグレード" ) upgrade_pkg | loading 600 100 "パッケージのアップグレードを行っています。" ;;
