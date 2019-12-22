@@ -2,7 +2,7 @@
 
 #-- 設定 --#
 settings=$(cd $(dirname $0) && pwd)/config
-
+version=1.4
 
 
 #-- エラーチェック
@@ -172,12 +172,12 @@ fi
 
 
 #-- バージョン情報 --#
-function version () {
+function show_version () {
     window \
         --info \
         --width="600" \
         --height="100" \
-        --text="＝＝　EG-Intaler　＝＝\nVersion:　1.4\nYamada　Hayao　shun819.mail@gmail.com"
+        --text="＝＝　EG-Intaler　＝＝\nVersion:　${version}\nYamada　Hayao　shun819.mail@gmail.com"
 }
 
 
@@ -193,7 +193,7 @@ while getopts 'adhps:t:u:v' arg; do
         s) script_dir=${OPTARG};;
         t) window_text=${OPTARG};;
         u) aur_user=${OPTARG};;
-        v) version;exit 0;;
+        v) show_version;exit 0;;
         "") : ;;
         #* ) exit 1;;
     esac
