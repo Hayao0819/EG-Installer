@@ -198,7 +198,7 @@ while getopts 'adhps:t:u:v' arg; do
     case "${arg}" in
         a) export ID=arch;;
         d) installed_list () { ${pacman} -Q | awk '{print $2}'; }; [[ ! $recall = true ]] && echo "dpkg,apt用のinstalled_listを使用します。" > /dev/null ;;
-        h) info 600 100 "==　デバッグ用　==\nこれはデバッグ用オプションです。通常利用はしないでください。\n\n-a　:　ArchLinuxモードを強制的に有効化します。\n-d　:　dpkg,apt用のinstalled_listを使用します。\n-h　:　このヘルプを表示します。このオプションが有効な場合、他のオプションは無視されます。\n-p　:　pacman用のinstalled_listを使用します。\n-v　:　バージョン情報を表示します。\n-s　[スクリプトディレクトリ]　:　スクリプトディレクトリを指定します。\n-t　[　ウィンドウタイトル　]　:　ウィンドウタイトルを指定します。\n-u　[　　　ユーザー名　　　]　:　パッケージのビルドに使用するユーザーを指定します。\n"; exit 0;;
+        h) info 600 100 "==　デバッグ用　==\nこれはデバッグ用オプションです。通常利用はしないでください。\n$settingsを変更することで値を保存できます。\n\n-a　:　ArchLinuxモードを強制的に有効化します。\n-d　:　dpkg,apt用のinstalled_listを使用します。\n-h　:　このヘルプを表示します。このオプションが有効な場合、他のオプションは無視されます。\n-p　:　pacman用のinstalled_listを使用します。\n-v　:　バージョン情報を表示します。\n-s　[スクリプトディレクトリ]　:　スクリプトディレクトリを指定します。\n-t　[　ウィンドウタイトル　]　:　ウィンドウタイトルを指定します。\n-u　[　　　ユーザー名　　　]　:　パッケージのビルドに使用するユーザーを指定します。\n"; exit 0;;
         p) installed_list () { ${pacman} -Q | awk '{print $1}'; }; [[ ! $recall = true ]] && echo "pacman用のinstalled_listを使用します。" > /dev/null ;;
         s) script_dir=${OPTARG};;
         t) window_text=${OPTARG};;
@@ -228,7 +228,7 @@ fi
 #-- pacapt --#
 if [[ ! $ID = "arch" || ! $ID = "arch32" ]]; then
     if [[ ! -f $pacman ]]; then
-        error 600 100 "$pacmanがありません。"
+        error 600 100 "$pacmanが存在しません。"
         exit 1
     fi
     if [[ ! -x $pacman ]]; then
@@ -292,12 +292,10 @@ set -eu
 
 #-- クリーンアップ --#
 function cleanup () {
-    $pacman -Scc --noconfirm
+    $pacman -Scc --noconfirm　| loading 600 100 "クリーンアップを実行中です。"
     if [[ $ID = "arch" || $ID = "arch32" ]]; then
         if [[ -n $(pacman -Qttdq) ]]; then
-            $pacman -Qttdq | $pacman -Rsnc - | loading 600 100 "クリーンアップを実行中です"
-        else
-            info 600 100 "クリーンアップの必要はありません。"
+            $pacman -Qttdq | $pacman -Rsnc - | loading 600 100 "クリーンアップを実行中です。"
         fi
     else
         $pacman -Rsn --noconfirm | loading 600 100 "クリーンアップを実行中です"
@@ -336,7 +334,7 @@ function install_and_uninstall () {
         function check_variable () {
             eval variable=$1
             if [[ -z $variable ]]; then
-                error 600 100 "スクリプト$packageに$variable変数が設定されていません。"
+                error 600 100 "スクリプト$packageに$variable変数が間違っています。"
                 exit 1
             fi
         }
@@ -361,7 +359,7 @@ function install_and_uninstall () {
         --warning \
         --width="600" \
         --height="100" \
-        --text="スクリプトの読み込みを行います。これにはしばらく時間がかかる場合があります。" \
+        --text="スクリプトの読み込みを行います。これにはしばらく時間がかかる場合があります。\nしばらくたっても表示されない場合はターミナル上でスクリプトを実行してみてください。" \
         --ok-label="読み込み開始"
 
     gen_list () {
@@ -395,7 +393,7 @@ function install_and_uninstall () {
     selected_list=$(gen_list; exit_code=$?)
     selected_list=(${selected_list//'|'/ })
     if [[ ! $exit_code = 0 && -z $selected_list ]]; then
-        error 600 100 "パッケージが選択されませんでした。\nウィザードを再起動します。"
+        error 600 100 "パッケージが選択されませんでした。トップに戻ります。"
         call_me $options
         exit
     fi
