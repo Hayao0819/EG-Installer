@@ -248,7 +248,12 @@ if [[ ! $recall = true ]]; then
             fi
         }
         if [[ -n $aur_user ]]; then
-            warning 600 100 "デバッグ用引数で指定されたユーザー($aur_user)を使用します。この設定は/tmp/userに保存されます。"
+            if [[ $aur_user = root ]]; then
+                error 600 100 "rootは使用できません。"
+                ask_user
+            else
+                warning 600 100 "デバッグ用引数で指定されたユーザー($aur_user)を使用します。この設定は/tmp/userに保存されます。"
+            fi
         elif [[ -f /tmp/user ]]; then
             source /tmp/user
             info 600 100 "/etc/userに保存されているユーザー($aur_user)を使用します。"
