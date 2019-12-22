@@ -153,12 +153,21 @@ fi
 set +eu
 if [[ ! -f $settings ]]; then
     error 600 100 "$settingsが存在しません。"
+    exit 1
 fi
 source $settings
 if [[ -z $ID ]]; then
     source /etc/os-release
 fi
 set -eu
+
+
+
+#-- アイコンチェック --#
+if [[ ! -f $window_icon ]]; then
+    error 600 100 "$window_iconが存在しません。"
+    exit 1
+fi
 
 
 
