@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-#-- 設定 --#
-settings=$(cd $(dirname $0) && pwd)/config
-version=1.4
-
-
-#-- エラーチェック
-set -eu
+# EG-Installer
+# SereneTeam (c) 2019.
+# Twitter: @Serene_JP
+#
+# Yamada Hayao
+# Twitter: @Hayao0819
+# Email : shun819.mail@gmail.com
 
 
 
@@ -24,6 +24,16 @@ set -eu
 # info [横幅] [高さ] [メッセージ]
 #
 # 改行する場合は \n と記述してください。　
+
+
+
+#-- 設定 --#
+settings=$(cd $(dirname $0) && pwd)/config
+version=1.4
+
+
+#-- エラーチェック
+set -eu
 
 
 
