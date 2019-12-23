@@ -200,9 +200,9 @@ while getopts 'adhpr:s:t:u:v' arg; do
     case "${arg}" in
         a) export ID=arch;;
         d) installed_list () { ${pacman} -Q | awk '{print $2}'; }; [[ ! $recall = true ]] && echo "dpkg,apt用のinstalled_listを使用します。" > /dev/null ;;
-        h) info 600 100 "==　デバッグ用　==\nこれはデバッグ用オプションです。通常利用はしないでください。\n$settingsを変更することで値を保存できます。\n\n-a　:　ArchLinuxモードを強制的に有効化します。\n-d　:　dpkg,apt用のinstalled_listを使用します。\n-h　:　このヘルプを表示します。このオプションが有効な場合、他のオプションは無視されます。\n-p　:　pacman用のinstalled_listを使用します。\n-v　:　バージョン情報を表示します。\n-s　[スクリプトディレクトリ]　:　スクリプトディレクトリを指定します。\n-t　[　ウィンドウタイトル　]　:　ウィンドウタイトルを指定します。\n-u　[　　　ユーザー名　　　]　:　パッケージのビルドに使用するユーザーを指定します。\n"; exit 0;;
+        h) info 600 100 "==　デバッグ用　==\nこれはデバッグ用オプションです。通常利用はしないでください。\n$settingsを変更することで値を保存できます。\n\n-a　:　ArchLinuxモードを強制的に有効化します。\n-d　:　dpkg,apt用のinstalled_listを使用します。\n-h　:　このヘルプを表示します。このオプションが有効な場合、他のオプションは無視されます。\n-p　:　pacman用のinstalled_listを使用します。\n-v　:　バージョン情報を表示します。\n-r　[　実行する項目の番号　]　:　特定の動作をメニューをスキップして行います。\n-s　[スクリプトディレクトリ]　:　スクリプトディレクトリを指定します。\n-t　[　ウィンドウタイトル　]　:　ウィンドウタイトルを指定します。\n-u　[　　　ユーザー名　　　]　:　パッケージのビルドに使用するユーザーを指定します。\n"; exit 0;;
         p) installed_list () { ${pacman} -Q | awk '{print $1}'; }; [[ ! $recall = true ]] && echo "pacman用のinstalled_listを使用します。" > /dev/null ;;
-        r) direct_execution=true;if [[ ! $recall = true ]]; then case ${OPTARG} in 1) run="パッケージのクリーンアップ";; 2) run="パッケージのアップグレード";; 3) run="パッケージの追加と削除" ;; esac; else exit 0; fi;;
+        r) direct_execution=true;if [[ ! $recall = true ]]; then case ${OPTARG} in 1) run="パッケージのクリーンアップ";; 2) run="パッケージのアップグレード";; 3) run="パッケージの追加と削除" ;;  *) error 600 100 "引数${OPTARG}が間違っています。"; exit 1 ;; esac; else exit 0; fi;;
         s) script_dir=${OPTARG};;
         t) window_text=${OPTARG};;
         u) aur_user=${OPTARG};;
@@ -269,7 +269,11 @@ if [[ ! $recall = true ]]; then
             fi
         elif [[ -f /tmp/user ]]; then
             source /tmp/user
-            info 600 100 "/etc/userに保存されているユーザー($aur_user)を使用します。"
+            if [[ -n $aur_user ]]; then
+                info 600 100 "/tmp/userに保存されているユーザー($aur_user)を使用します。"
+            else
+                ask_user
+            fi
             [[ -z $aur_user ]] && ask_user
         elif [[ ! $SUDO_USER = root ]]; then
             aur_user=$SUDO_USER
