@@ -294,7 +294,7 @@ if [[ ! $recall = true ]]; then
                 ask_user
             fi
             [[ -z $aur_user ]] && ask_user
-        elif [[ ! $SUDO_USER = root ]]; then
+        elif [[ ! $SUDO_USER = root && -n $SUDO_USER ]]; then
             aur_user=$SUDO_USER
             info 600 100 "sudoで使用されていたユーザー($aur_user)を使用します。この設定は/tmp/userに保存されます。"
         else
