@@ -139,6 +139,15 @@ function clear_variable () {
     unset preparing
 }
 
+# デバッグモード
+function debug_msg () {
+    set +eu
+    if [[ $debug_mode = true ]]; then
+        echo $@
+    fi
+    set -eu
+}
+
 
 
 #-- ディスプレイチェック --#
@@ -190,6 +199,7 @@ function show_version () {
         --width="600" \
         --height="100" \
         --text="＝＝　EG-Intaler　＝＝\nVersion:　${version}\nYamada　Hayao　shun819.mail@gmail.com"
+    debug_msg "EG-installer v${version}"
 }
 
 
@@ -207,6 +217,7 @@ while getopts 'adhpr:s:t:u:v' arg; do
         t) window_text=${OPTARG};;
         u) aur_user=${OPTARG};;
         v) show_version;exit 0;;
+        z) debug_mode=true; warning 600 100 "デバッグモードが有効化されました。" ;;
         "") : ;;
         #* ) exit 1;;
     esac
@@ -243,8 +254,16 @@ fi
 
 
 
+#-- デバッグモード --#
+if [[ -z $debug_mode ]]; then
+    debug_mode=false
+fi
+
+
+
 #-- AURユーザー --#
 set +eu
+debug_msg $ID
 if [[ ! $recall = true ]]; then
     if [[ $ID = "arch" || $ID = "arch32" ]]; then
         function ask_user () {
