@@ -1,0 +1,23 @@
+name=
+package_name=
+description=
+run_preparing=true
+
+
+function preparing () {
+    curl -o /tmp/make_from_aur.sh https://gist.githubusercontent.com/Hayao0819/3389c0ab2f000da13dbfe8e06315131b/raw/601833a210eeb4e19fea48584569e29d0f8517dc/aur.bash
+    chmod 755 /tmp/make_from_aur.sh
+    su $aur_user -c "/tmp/make_from_aur.sh $package_name"
+    mv $(find /tmp -name "$package_name*.pkg.tar.xz") /tmp > /dev/null
+    rm /tmp/make_from_aur.sh
+}
+
+function install () {
+    pkg_file=$(find /tmp -name "$package_name*.pkg.tar.xz")
+    pacman -U --noconfirm $pkg_file
+    rm $pkg_file
+}
+
+uninstall () {
+    pacman -Rsn --noconfirm ${package_name}
+}
