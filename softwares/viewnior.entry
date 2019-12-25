@@ -1,0 +1,13 @@
+name=Viewnior
+package_name=viewnior
+description="非常に軽量な画像ビューアー"
+run_preparing=false
+
+
+install () {
+    pacman -S --noconfirm ${package_name}
+}
+
+uninstall () {
+    pacman -Rsn --noconfirm ${package_name}
+}
