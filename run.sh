@@ -138,6 +138,7 @@ function clear_variable () {
     unset install
     unset uninstall
     unset preparing
+    unset install_check
 }
 
 # デバッグモード
@@ -368,7 +369,9 @@ function install_and_uninstall () {
         }
 
         check_variable name
-        check_variable package_name
+        if [[ $install_check = false ]]; then
+            check_variable package_name
+        fi
         check_variable description
         check_variable run_preparing
         check_func install
@@ -405,15 +408,20 @@ function install_and_uninstall () {
                 scripts=($(cd $script_dir; ls *.${entry_extension}; cd ..))
                 for package in ${scripts[@]}; do
                     source $script_dir/$package
-                    if [[ $(check_pkg $package_name) = 0 ]]; then
+                    set +eu
+                    if [[ $install_check = false ]]; then
+                        status_display="None"
+                    elif [[ $(check_pkg $package_name) = 0 ]]; then
                         status_display="はい"
                     else
                         status_display="いいえ"
                     fi
+                    set -eu
                     echo "FALSE"
                     echo "$name"
                     echo "$status_display"
                     echo "$description"
+                    clear_variable
                 done
             )
     }
@@ -452,11 +460,12 @@ function install_and_uninstall () {
 
         # インストール or アンインストール
         source $script_dir/$package
-
-        if [[ $(check_pkg $package_name) = 1 ]]; then
+        set +eu
+        if [[ $install_check = false ]]; then
+            set -eu
             window \
                 --question \
-                --text="パッケージ$nameをインストールします。よろしいですか？" \
+                --text="スクリプト$nameを適用します。よろしいですか？\nこのスクリプトは適用済、未適用を範囲していません。複数回の適用は正常に動作しない可能性がありますので注意してください。" \
                 --ok-label="続行する" \
                 --cancel-label="中断する" \
                 --width=600 \
@@ -465,16 +474,36 @@ function install_and_uninstall () {
                 preparing | loading 600 100 "パッケージをビルドしています"
             fi
             install | loading 600 100 "パッケージ$nameをインストールしています"
+            set +eu
         else
-            window \
-                --question \
-                --text="パッケージ$nameをアンインストールします。よろしいですか？" \
-                --ok-label="続行する" \
-                --cancel-label="中断する" \
-                --width=600 \
-                --height=100
-            uninstall | loading 600 100 "パッケージ$nameをアンインストールしています。"
+            if [[ $(check_pkg $package_name) = 1 ]]; then
+                set -eu
+                window \
+                    --question \
+                    --text="パッケージ$nameをインストールします。よろしいですか？" \
+                    --ok-label="続行する" \
+                    --cancel-label="中断する" \
+                    --width=600 \
+                    --height=100
+                if $run_preparing; then
+                    preparing | loading 600 100 "パッケージをビルドしています"
+                fi
+                install | loading 600 100 "パッケージ$nameをインストールしています"
+                set +eu
+            else
+                set -eu
+                window \
+                    --question \
+                    --text="パッケージ$nameをアンインストールします。よろしいですか？" \
+                    --ok-label="続行する" \
+                    --cancel-label="中断する" \
+                    --width=600 \
+                    --height=100
+                uninstall | loading 600 100 "パッケージ$nameをアンインストールしています。"
+                set +eu
+            fi
         fi
+        set -eu
     done
     info 600 100 "処理が完了しました。\n詳細はターミナルを参照してください。"
 }
