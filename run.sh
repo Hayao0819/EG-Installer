@@ -30,7 +30,7 @@
 #-- 設定 --#
 settings=$(cd $(dirname $0) && pwd)/config
 entry_extension="entry"
-version=1.4
+version=1.5
 
 
 
