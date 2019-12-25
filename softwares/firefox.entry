@@ -1,0 +1,13 @@
+name="Firefox"
+package_name="firefox"
+description="Mozillaの高速で動作するブラウザ"
+run_preparing=false
+
+
+install () {
+    pacman -S --noconfirm ${package_name}
+}
+
+uninstall () {
+    pacman -Rsn --noconfirm ${package_name}
+}
