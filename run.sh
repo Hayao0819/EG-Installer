@@ -29,6 +29,7 @@
 
 #-- 設定 --#
 settings=$(cd $(dirname $0) && pwd)/config
+entry_extension="entry"
 version=1.4
 
 
@@ -348,7 +349,7 @@ function upgrade_pkg () {
 #-- インストールとアンインストール --#
 function install_and_uninstall () {
     # スクリプト読み込み
-    scripts=($(cd $script_dir; ls *.entry; cd ..))
+    scripts=($(cd $script_dir; ls *.${entry_extension}; cd ..))
     for package in ${scripts[@]}; do
         source $script_dir/$package
 
@@ -401,7 +402,7 @@ function install_and_uninstall () {
             --height="500" \
             --text="インストールまたは削除したいパッケージを選択してください。" \
             $(
-                scripts=($(ls $script_dir))
+                scripts=($(cd $script_dir; ls *.${entry_extension}; cd ..))
                 for package in ${scripts[@]}; do
                     source $script_dir/$package
                     if [[ $(check_pkg $package_name) = 0 ]]; then
@@ -435,7 +436,7 @@ function install_and_uninstall () {
 
     for selected in ${selected_list[@]}; do
         # 選択パッケージに対応しているファイルを探す
-        scripts=($(cd $script_dir; ls *.entry; cd ..))
+        scripts=($(cd $script_dir; ls *.${entry_extension}; cd ..))
         for package in ${scripts[@]}; do
             set name
             set description
