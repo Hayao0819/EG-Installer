@@ -210,7 +210,7 @@ while getopts 'adehpr:s:t:u:vxz' arg; do
     case "${arg}" in
         a) export ID=arch;;
         d) installed_list () { ${pacman} -Q | awk '{print $2}'; }; [[ ! $recall = true ]] && warning 600 100 "dpkg,apt用のinstalled_listを使用します。" > /dev/null ;;
-        e) echo ${version}; exit 0;;
+        e) echo "${version} ${settings}"; exit 0;;
         h) info 700 100 "==　デバッグ用　==\nこれはデバッグ用オプションです。通常利用はしないでください。\n$settingsを変更することで値を保存できます。\n\n-a　:　ArchLinuxモードを強制的に有効化します。\n-d　:　dpkg,apt用のinstalled_listを使用します。\n-h　:　このヘルプを表示します。このオプションが有効な場合、他のオプションは無視されます。\n-p　:　pacman用のinstalled_listを使用します。\n-v　:　バージョン情報を表示します。\n-x　:　bashでのデバッグモードを有効化します。\n-z　:　デバッグモードを有効化します。（設定されたデバッグメッセージをターミナル上に表示します。）\n-r　[　実行する項目の番号　]　:　特定の動作をメニューをスキップして行います。\n-s　[スクリプトディレクトリ]　:　スクリプトディレクトリを指定します。\n-t　[　ウィンドウタイトル　]　:　ウィンドウタイトルを指定します。\n-u　[　　　ユーザー名　　　]　:　パッケージのビルドに使用するユーザーを指定します。\n"; exit 0;;
         p) installed_list () { ${pacman} -Q | awk '{print $1}'; }; [[ ! $recall = true ]] && warning 600 100 "pacman用のinstalled_listを使用します。" > /dev/null ;;
         r) direct_execution=true;if [[ ! $recall = true ]]; then case ${OPTARG} in 1) run="パッケージのクリーンアップ";; 2) run="パッケージのアップグレード";; 3) run="パッケージの追加と削除" ;;  *) error 600 100 "引数${OPTARG}が間違っています。"; exit 1 ;; esac; else exit 0; fi;;
