@@ -443,11 +443,13 @@ function install_and_uninstall () {
 
     selected_list=$(gen_list; exit_code=$?)
     selected_list=(${selected_list//'|'/ })
+    set +eu
     if [[ ! $exit_code = 0 && -z $selected_list ]]; then
         error 600 100 "パッケージが選択されませんでした。トップに戻ります。"
         call_me $options
         exit
     fi
+    set -eu
 
 
     # データベースの更新
