@@ -350,29 +350,43 @@ function upgrade_pkg () {
 
 #-- インストールとアンインストール --#
 function install_and_uninstall () {
+
+    # スクリプトのアップデート処理
+    set + eu
+    if [[ -n $softwares_update && -f $softwares_update && -x $softwares_update ]]; then
+        $softwares_update | loading 600 100 "スクリプトを更新しています。"
+    fi
+    set -eu
+
     # スクリプト読み込み
     scripts=($(cd $script_dir; ls *.${entry_extension}; cd ..))
     for package in ${scripts[@]}; do
         source $script_dir/$package
 
         function check_func () {
+            set +eu
             if [[ ! $(type -t $1) = "function" ]]; then
                 error 600 100 "スクリプト$packageの$1関数が間違っています。"
                 exit 1
             fi
+            set -eu
         }
         function check_variable () {
+            set +eu
             eval variable=$1
             if [[ -z $variable ]]; then
                 error 600 100 "スクリプト$packageに$variable変数が間違っています。"
                 exit 1
             fi
+            set -eu
         }
 
         check_variable name
+        set +eu
         if [[ $install_check = false ]]; then
             check_variable package_name
         fi
+        set -eu
         check_variable description
         check_variable run_preparing
         check_func install
