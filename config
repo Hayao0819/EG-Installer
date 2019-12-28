@@ -65,7 +65,7 @@ script_dir="${current_dir}/softwares"
 #=================================================================#
 #
 # pacman用（-p）
-# installed_list () { ${pacman} -Q | awk '{print $1}'; }
+# installed_list () { pacman -Q | awk '{print $1}'; }
 #
 # apt,dpkg用 （-d）
 # installed_list () { ${pacman} -Q | awk '{print $2}'; }
