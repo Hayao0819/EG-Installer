@@ -385,12 +385,12 @@ function install_and_uninstall () {
         set +eu
         if [[ ! $install_check = false ]]; then
             check_variable package_name
+            check_func uninstall
         fi
         set -eu
         check_variable description
         check_variable run_preparing
         check_func install
-        check_func uninstall
         if $run_preparing; then
             check_func preparing
         fi
