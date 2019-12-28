@@ -536,7 +536,7 @@ if [[ ! $direct_execution = true ]]; then
     run=$(
         window \
             --info \
-            --text="何を実行しますか？" \
+            --text="何を実行しますか？\n\n終了・・・終了します\nクリーンアップ・・・パッケージのクリーンアップを行います。\nアップグレード・・・パッケージのアップグレードを行います\n追加と削除・・・パッケージのインストールやアンインストールを行います。 " \
             --ok-label="終了する" \
             $(
                 # ArchLinux用メニュー
@@ -544,9 +544,9 @@ if [[ ! $direct_execution = true ]]; then
                     echo "--extra-button=保存されているAURユーザーデータを削除"
                 fi
             ) \
-            --extra-button="パッケージのクリーンアップ" \
-            --extra-button="パッケージのアップグレード" \
-            --extra-button="パッケージの追加と削除" \
+            --extra-button="クリーンアップ" \
+            --extra-button="アップグレード" \
+            --extra-button="追加と削除" \
             --width="300" \
             --height="100"
     )
