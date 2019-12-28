@@ -558,10 +558,10 @@ if [[ ! $direct_execution = true ]]; then
 fi
 debug_msg "$runが選択されました。"
 case $run in
-    "パッケージの追加と削除" ) install_and_uninstall ;;
-    "パッケージのアップグレード" ) upgrade_pkg | loading 600 100 "パッケージのアップグレードを行っています。" ;;
+    "追加と削除" ) install_and_uninstall ;;
+    "アップグレード" ) upgrade_pkg | loading 600 100 "パッケージのアップグレードを行っています。" ;;
     "保存されているAURユーザーデータを削除" ) rm -f /tmp/user ; info 600 100 "保存されているユーザーを削除しました" ; exit 0;;
-    "パッケージのクリーンアップ" ) cleanup ;;
+    "クリーンアップ" ) cleanup ;;
     * ) exit 1 ;;
 esac
 set -eu
