@@ -77,3 +77,10 @@ AURにないパッケージで`makepkg`する必要がある場合は、最初�
 アップデーターは[こちら](https://gist.github.com/Hayao0819/6135651937954048fd1cb3c31f6b64b5)にあります。  
 このアップデーターはv1.6以降からのアップデートにのみ対応していますので、それ以前のバージョンでは使用しないでください。（正常にバージョン取得を行えずにエラーになります。）  
 アップデーターはsoftwaresまで上書きするので、ディストリビューターは使用しないでください。
+
+# 各ディストリビューション向けパッケージ
+## ArchLinux
+[こちらのPKGBUILD](https://github.com/Hayao0819/EG-Installer-PKGBUILD)よりビルドするか、[私のリポジトリ](https://github.com/Hayao0819/archlinux-repo)からインストールしてください。
+
+## Ubuntu
+SereneTeamが管理、開発を行っている[SereneStartdash](https://github.com/Hayao0819/serene-startdash)をご利用ください。
