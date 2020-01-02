@@ -121,7 +121,7 @@ function check_func () {
 }
 
 # パッケージチェック
-check_pkg () {
+function check_pkg () {
     if [[ -n $(installed_list | grep -x "$1") ]]; then
         printf 0
     else
@@ -187,6 +187,9 @@ set -eu
 #-- アイコンチェック --#
 if [[ ! -f $window_icon ]]; then
     error 600 100 "$window_iconが存在しません。"
+    exit 1
+elif [[ ! -r $window_icon ]]; then
+    error 600 100 "$window_iconが読み込めませんでした。権限を確認してください。"
     exit 1
 fi
 
