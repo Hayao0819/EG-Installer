@@ -571,7 +571,7 @@ case $run in
     "アップグレード" ) upgrade_pkg | loading 600 100 "パッケージのアップグレードを行っています。" ;;
     "保存されているAURユーザーデータを削除" ) rm -f /tmp/user ; info 600 100 "保存されているユーザーを削除しました" ; exit 0;;
     "クリーンアップ" ) cleanup ;;
-    * ) exit 1 ;;
+    * ) error 600 100 "例外が発生しました。"; exit 1;;
 esac
 set -eu
 
