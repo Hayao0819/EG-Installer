@@ -195,7 +195,69 @@ fi
 
 
 
-#-- バージョン情報 --#
+#-- 引数用関数 --#
+
+# ArchLinuxモードを強制的に有効化
+function enable_arch () {
+    export ID=arch
+}
+
+# アップデータのための情報を表示
+function show_updater_info () {
+    echo "${version} ${settings}"
+    exit 0
+}
+
+# dpkg用のinstalled_listを有効化
+function enable_installed_list_dpkg () {
+    installed_list () {
+        ${pacman} -Q | awk '{print $2}';
+    }
+    [[ ! $recall = true ]] && warning 600 100 "dpkg,apt用のinstalled_listを使用します。" > /dev/null
+}
+
+# ヘルプを表示
+function show_help () {
+    info 700 100 "==　デバッグ用　==\nこれはデバッグ用オプションです。通常利用はしないでください。\n$settingsを変更することで値を保存できます。\n\n-a　:　ArchLinuxモードを強制的に有効化します。\n-d　:　dpkg,apt用のinstalled_listを使用します。\n-h　:　このヘルプを表示します。このオプションが有効な場合、他のオプションは無視されます。\n-p　:　pacman用のinstalled_listを使用します。\n-v　:　バージョン情報を表示します。\n-x　:　bashでのデバッグモードを有効化します。\n-z　:　デバッグモードを有効化します。（設定されたデバッグメッセージをターミナル上に表示します。）\n-r　[　実行する項目の番号　]　:　特定の動作をメニューをスキップして行います。\n-s　[スクリプトディレクトリ]　:　スクリプトディレクトリを指定します。\n-t　[　ウィンドウタイトル　]　:　ウィンドウタイトルを指定します。\n-u　[　　　ユーザー名　　　]　:　パッケージのビルドに使用するユーザーを指定します。\n"
+    exit 0
+}
+
+# pacman用のinstalled_listを有効化
+function enable_installed_list_pacman () {
+    installed_list () {
+        ${pacman} -Q | awk '{print $1}'
+    }
+    [[ ! $recall = true ]] && warning 600 100 "pacman用のinstalled_listを使用します。" > /dev/null
+}
+
+# 実行する内容を直接指定
+function run_execution () {
+    direct_execution=true
+    if [[ ! $recall = true ]]; then
+        case ${OPTARG} in 
+            1) run="クリーンアップ";;
+            2) run="アップグレード";;
+            3) run="追加と削除" ;;
+            *) error 600 100 "引数${OPTARG}が間違っています。"; exit 1 ;;
+        esac
+    else
+        exit 0
+    fi
+}
+
+# bashデバッグを有効化
+function enable_bash_debug () {
+    set -x
+    warning 600 100 "bashデバッグモードが有効化されました。"
+}
+
+# デバッグメッセージを有効化
+function enable_debug () {
+    debug_mode=true
+    warning 600 100 "デバッグモードが有効化されました。" 
+}
+
+# バージョン情報表示
 function show_version () {
     window \
         --info \
@@ -203,28 +265,42 @@ function show_version () {
         --height="100" \
         --text="＝＝　EG-Intaler　＝＝\nVersion:　${version}\nYamada　Hayao　shun819.mail@gmail.com"
     debug_msg "EG-installer v${version}"
+    exit 0
 }
 
 
 
 #-- デバッグ用引数 --#
 set +eu
-while getopts 'adehpr:s:t:u:vxz' arg; do
+while getopts 'adehpr:s:t:u:vxz-:' arg; do
     case "${arg}" in
-        a) export ID=arch;;
-        d) installed_list () { ${pacman} -Q | awk '{print $2}'; }; [[ ! $recall = true ]] && warning 600 100 "dpkg,apt用のinstalled_listを使用します。" > /dev/null ;;
-        e) echo "${version} ${settings}"; exit 0;;
-        h) info 700 100 "==　デバッグ用　==\nこれはデバッグ用オプションです。通常利用はしないでください。\n$settingsを変更することで値を保存できます。\n\n-a　:　ArchLinuxモードを強制的に有効化します。\n-d　:　dpkg,apt用のinstalled_listを使用します。\n-h　:　このヘルプを表示します。このオプションが有効な場合、他のオプションは無視されます。\n-p　:　pacman用のinstalled_listを使用します。\n-v　:　バージョン情報を表示します。\n-x　:　bashでのデバッグモードを有効化します。\n-z　:　デバッグモードを有効化します。（設定されたデバッグメッセージをターミナル上に表示します。）\n-r　[　実行する項目の番号　]　:　特定の動作をメニューをスキップして行います。\n-s　[スクリプトディレクトリ]　:　スクリプトディレクトリを指定します。\n-t　[　ウィンドウタイトル　]　:　ウィンドウタイトルを指定します。\n-u　[　　　ユーザー名　　　]　:　パッケージのビルドに使用するユーザーを指定します。\n"; exit 0;;
-        p) installed_list () { ${pacman} -Q | awk '{print $1}'; }; [[ ! $recall = true ]] && warning 600 100 "pacman用のinstalled_listを使用します。" > /dev/null ;;
-        r) direct_execution=true;if [[ ! $recall = true ]]; then case ${OPTARG} in 1) run="クリーンアップ";; 2) run="アップグレード";; 3) run="追加と削除" ;;  *) error 600 100 "引数${OPTARG}が間違っています。"; exit 1 ;; esac; else exit 0; fi;;
+        a) enable_arch;;
+        d) enable_installed_list_dpkg ;;
+        e) show_updater_info;;
+        h) show_help;;
+        p) enable_installed_list_pacman ;;
+        r) run_execution;;
         s) script_dir=${OPTARG}; warning 600 100 "スクリプトディレクトリが${OPTARG}に指定されました。" ;;
         t) window_text=${OPTARG}; warning 600 100 "ウィンドウタイトルが${OPTARG}に設定されました。" ;;
         u) aur_user=${OPTARG};;
-        v) show_version;exit 0;;
-        x) set -x; warning 600 100 "bashデバッグモードが有効化されました。";;
-        z) debug_mode=true; warning 600 100 "デバッグモードが有効化されました。" ;;
+        v) show_version;;
+        x) enable_bash_debug;;
+        z) enable_debug;;
+        -)
+            case "${OPTARG}" in
+                enable-arch ) enable_arch;;
+                dpkg ) enable_installed_list_dpkg;;
+                update-info ) show_updater_info;;
+                help ) show_help ;;
+                pacman ) enable_installed_list_pacman;;
+                version ) show_updater_info;;
+                bash-debug ) enable_bash_debug;;
+                debug ) enable_debug;;
+                * ) error 600 100 "引数が無効です。"; exit 1;;
+            esac
+            ;;
         "") : ;;
-        #* ) exit 1;;
+        * ) exit 1;;
     esac
 done
 set -eu
