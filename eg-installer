@@ -321,7 +321,9 @@ fi
 
 
 #-- pacapt --#
-if [[ ! $ID = "arch" || ! $ID = "arch32" ]]; then
+if [[ $ID = "arch" || $ID = "arch32" ]]; then
+    pacman=pacman
+else
     if [[ ! -f $pacman ]]; then
         error 600 100 "$pacmanが存在しません。"
         exit 1
@@ -329,8 +331,6 @@ if [[ ! $ID = "arch" || ! $ID = "arch32" ]]; then
     if [[ ! -x $pacman ]]; then
         chmod 755 $pacman
     fi
-else
-    pacman=pacman
 fi
 
 
