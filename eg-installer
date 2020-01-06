@@ -629,6 +629,12 @@ if [[ ! $direct_execution = true ]]; then
                     echo "--extra-button=保存されているAURユーザーデータを削除"
                 fi
             ) \
+            $(
+                # スクリプトのアップデート
+                if [[ -n $softwares_update && -f $softwares_update && -x $softwares_update ]]; then
+                    echo "--extra-button=一覧をアップデート"
+                fi
+            ) \
             --extra-button="クリーンアップ" \
             --extra-button="アップグレード" \
             --extra-button="追加と削除" \
@@ -647,6 +653,7 @@ case $run in
     "アップグレード" ) upgrade_pkg | loading 600 100 "パッケージのアップグレードを行っています。" ;;
     "保存されているAURユーザーデータを削除" ) rm -f /tmp/user ; info 600 100 "保存されているユーザーを削除しました" ; exit 0;;
     "クリーンアップ" ) cleanup ;;
+    "一覧をアップデート" ) $softwares_update | loading 600 100 "スクリプトを更新しています。";;
     * ) error 600 100 "例外が発生しました。"; exit 1;;
 esac
 set -eu
