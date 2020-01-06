@@ -272,11 +272,12 @@ function show_version () {
 
 #-- デバッグ用引数 --#
 set +eu
-while getopts 'adehpr:s:t:u:vxz-:' arg; do
+while getopts 'adeg:hpr:s:t:u:vxz-:' arg; do
     case "${arg}" in
         a) enable_arch;;
         d) enable_installed_list_dpkg ;;
         e) show_updater_info;;
+        g) softwares_update=${OPTARG} ; info 600 100 "アップデートスクリプトが${OPTARG}に指定されました。" ;;
         h) show_help;;
         p) enable_installed_list_pacman ;;
         r) run_execution;;
@@ -339,6 +340,19 @@ fi
 set +eu
 if [[ -z $debug_mode ]]; then
     debug_mode=false
+fi
+set -eu
+
+
+#-- softwares-update --##
+set +eu
+if [[ $softwares_update = "debug" ]]; then
+    if [[ -f /tmp/softwares_update ]]; then
+        rm -f /tmp/softwares_update
+    fi
+    echo -e '#!/usr/bin/env bash\n\nzenity --warning --text="疑似ソフトウェアアップデート デバッグモード" --width="300" --height="100"' > /tmp/softwares_update
+    chmod 755 /tmp/softwares_update
+    softwares_update=/tmp/softwares_update
 fi
 set -eu
 
