@@ -640,7 +640,7 @@ if [[ ! $direct_execution = true ]]; then
             $(
                 # ArchLinux用メニュー
                 if [[ $ID = "arch" || $ID = "arch32" ]]; then
-                    echo "--extra-button=AUR情報を削除"
+                    echo '--extra-button=AUR情報を削除'
                 fi
             ) \
             $(
@@ -662,11 +662,13 @@ if [[ ! $direct_execution = true ]]; then
                 * ) :;;
     esac
 fi
+
+
 debug_msg "$runが選択されました。"
 case $run in
     "追加と削除" ) install_and_uninstall ;;
     "アップグレード" ) upgrade_pkg | loading 600 100 "パッケージのアップグレードを行っています。" ;;
-    "保存されているAURユーザーデータを削除" ) rm -f /tmp/user ; info 600 100 "保存されているユーザーを削除しました" ; exit 0;;
+    "AUR情報を削除" ) rm -f /tmp/user ; info 600 100 "保存されているユーザーを削除しました" ; exit 0;;
     "クリーンアップ" ) cleanup ;;
     "一覧をアップデート" ) $softwares_update | loading 600 100 "スクリプトを更新しています。";;
     * ) error 600 100 "例外が発生しました。"; exit 1;;
