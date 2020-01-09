@@ -27,23 +27,20 @@
 
 
 
+#-- 情報取得 --#
+current_path=$(cd $(dirname $0) && pwd)/$(basename $0)
+current_dir=$(dirname $current_path)
+
+
+
 #-- 設定 --#
-settings=$(cd $(dirname $0) && pwd)/config
-entry_extension="entry"
-version=1.8
+settings=$current_dir/config/main.json
+debug_files=$current_dir/config/debug.json
 
 
 
 #-- エラーチェック --#
 set -eu
-
-
-
-#-- 変数定義 --#
-current_path=$(cd $(dirname $0) && pwd)/$(basename $0)
-current_dir=$(dirname $current_path)
-options=$@
-unset run
 
 
 
@@ -148,6 +145,26 @@ function debug_msg () {
     fi
 }
 
+#jsonの値を表示
+#
+# load_json [値] [ファイル名]
+function load_json () {
+    jq -r .$1 $2
+}
+
+# jsonの値を同じ名前のbash変数に格納
+#
+# load_json_to_var [値] [ファイル名]
+function load_json_to_var () {
+    eval $1="$(eval echo -n $(load_json $1 $2))"
+}
+
+
+
+#-- 変数定義 --#
+options=$(echo $(load_json fixed_option $debug_files) $@)
+unset run
+
 
 
 #-- ディスプレイチェック --#
@@ -176,7 +193,21 @@ if [[ ! -f $settings ]]; then
     error 600 100 "$settingsが存在しません。"
     exit 1
 fi
-source $settings
+if [[ ! -f $debug_files ]]; then
+    error 600 100 "$debug_filesが存在しません。"
+    exit 1
+fi
+{
+    load_json_to_var version $debug_files
+    load_json_to_var entry_extension $debug_files
+    load_json_to_var fixed_option $debug_files
+    load_json_to_var window_text $settings
+    load_json_to_var window_icon $settings
+    load_json_to_var pacman $settings
+    load_json_to_var script_dir $settings
+    load_json_to_var softwares_update $settings
+}
+
 if [[ -z $ID ]]; then
     source /etc/os-release
 fi

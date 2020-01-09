@@ -1,0 +1,8 @@
+{
+    "window_text" : "EG-Installer-v.${version}",
+    "window_icon" : "/usr/share/pixmaps/archlinux.png",
+    "pacman" : "${current_dir}/pacapt",
+    "script_dir" : "${current_dir}/softwares",
+    "installed_list_file" : "${current_dir}/config/installed_list",
+    "softwares_update" : ""
+}
