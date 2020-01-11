@@ -262,7 +262,7 @@ function show_version () {
 
 #-- デバッグ用引数 --#
 set +eu
-while getopts 'adeg:hpr:s:t:u:vxz-:' arg; do
+while getopts 'adeg:hpr:s:t:u:vwxz-:' arg; do
     case "${arg}" in
         a) enable_arch;;
         d) enable_installed_list_dpkg ;;
@@ -275,6 +275,7 @@ while getopts 'adeg:hpr:s:t:u:vxz-:' arg; do
         t) window_text=${OPTARG}; warning 600 100 "ウィンドウタイトルが${OPTARG}に設定されました。" ;;
         u) aur_user=${OPTARG};;
         v) show_version;;
+        w) enable_bash_debug; enable_debug;;
         x) enable_bash_debug;;
         z) enable_debug;;
         -)
