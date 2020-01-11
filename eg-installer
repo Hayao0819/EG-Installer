@@ -163,6 +163,8 @@ set +eu
 if [[ ! -f $settings ]]; then
     error 600 100 "$settingsが存在しません。"
     exit 1
+elif [[ ! -r $settings ]]; then
+    error 600 100 "$settingsの読み込みに失敗しました。\n権限を確認してください。"
 fi
 source $settings
 if [[ -z $ID ]]; then
@@ -176,6 +178,8 @@ set -eu
 if [[ ! -f $window_icon ]]; then
     error 600 100 "$window_iconが存在しません。"
     exit 1
+elif [[ ! -r $window_icon ]]; then
+    error 600 100 "$window_iconの読み込みに失敗しました。\n権限を確認してください。"
 fi
 
 
