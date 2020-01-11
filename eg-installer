@@ -30,7 +30,7 @@
 #-- 設定 --#
 settings=$(cd $(dirname $0) && pwd)/config
 entry_extension="entry"
-version=1.7.2
+version=1.8
 
 
 
@@ -121,7 +121,7 @@ function check_func () {
 }
 
 # パッケージチェック
-check_pkg () {
+function check_pkg () {
     if [[ -n $(installed_list | grep -x "$1") ]]; then
         printf 0
     else
@@ -179,12 +179,75 @@ if [[ ! -f $window_icon ]]; then
     error 600 100 "$window_iconが存在しません。"
     exit 1
 elif [[ ! -r $window_icon ]]; then
-    error 600 100 "$window_iconの読み込みに失敗しました。\n権限を確認してください。"
+    error 600 100 "$window_iconが読み込めませんでした。権限を確認してください。"
+    exit 1
 fi
 
 
 
-#-- バージョン情報 --#
+#-- 引数用関数 --#
+
+# ArchLinuxモードを強制的に有効化
+function enable_arch () {
+    export ID=arch
+}
+
+# アップデータのための情報を表示
+function show_updater_info () {
+    echo "${version} ${settings}"
+    exit 0
+}
+
+# dpkg用のinstalled_listを有効化
+function enable_installed_list_dpkg () {
+    installed_list () {
+        ${pacman} -Q | awk '{print $2}';
+    }
+    [[ ! $recall = true ]] && warning 600 100 "dpkg,apt用のinstalled_listを使用します。" > /dev/null
+}
+
+# ヘルプを表示
+function show_help () {
+    info 700 100 "==　デバッグ用　==\nこれはデバッグ用オプションです。通常利用はしないでください。\n$settingsを変更することで値を保存できます。\n\n-a　:　ArchLinuxモードを強制的に有効化します。\n-d　:　dpkg,apt用のinstalled_listを使用します。\n-h　:　このヘルプを表示します。このオプションが有効な場合、他のオプションは無視されます。\n-p　:　pacman用のinstalled_listを使用します。\n-v　:　バージョン情報を表示します。\n-x　:　bashでのデバッグモードを有効化します。\n-z　:　デバッグモードを有効化します。（設定されたデバッグメッセージをターミナル上に表示します。）\n-r　[　実行する項目の番号　]　:　特定の動作をメニューをスキップして行います。\n-s　[スクリプトディレクトリ]　:　スクリプトディレクトリを指定します。\n-t　[　ウィンドウタイトル　]　:　ウィンドウタイトルを指定します。\n-u　[　　　ユーザー名　　　]　:　パッケージのビルドに使用するユーザーを指定します。\n"
+    exit 0
+}
+
+# pacman用のinstalled_listを有効化
+function enable_installed_list_pacman () {
+    installed_list () {
+        ${pacman} -Q | awk '{print $1}'
+    }
+    [[ ! $recall = true ]] && warning 600 100 "pacman用のinstalled_listを使用します。" > /dev/null
+}
+
+# 実行する内容を直接指定
+function run_execution () {
+    direct_execution=true
+    if [[ ! $recall = true ]]; then
+        case ${OPTARG} in 
+            1) run="クリーンアップ";;
+            2) run="アップグレード";;
+            3) run="追加と削除" ;;
+            *) error 600 100 "引数${OPTARG}が間違っています。"; exit 1 ;;
+        esac
+    else
+        exit 0
+    fi
+}
+
+# bashデバッグを有効化
+function enable_bash_debug () {
+    set -x
+    warning 600 100 "bashデバッグモードが有効化されました。"
+}
+
+# デバッグメッセージを有効化
+function enable_debug () {
+    debug_mode=true
+    warning 600 100 "デバッグモードが有効化されました。" 
+}
+
+# バージョン情報表示
 function show_version () {
     window \
         --info \
@@ -192,28 +255,43 @@ function show_version () {
         --height="100" \
         --text="＝＝　EG-Intaler　＝＝\nVersion:　${version}\nYamada　Hayao　shun819.mail@gmail.com"
     debug_msg "EG-installer v${version}"
+    exit 0
 }
 
 
 
 #-- デバッグ用引数 --#
 set +eu
-while getopts 'adehpr:s:t:u:vxz' arg; do
+while getopts 'adeg:hpr:s:t:u:vxz-:' arg; do
     case "${arg}" in
-        a) export ID=arch;;
-        d) installed_list () { ${pacman} -Q | awk '{print $2}'; }; [[ ! $recall = true ]] && warning 600 100 "dpkg,apt用のinstalled_listを使用します。" > /dev/null ;;
-        e) echo "${version} ${settings}"; exit 0;;
-        h) info 700 100 "==　デバッグ用　==\nこれはデバッグ用オプションです。通常利用はしないでください。\n$settingsを変更することで値を保存できます。\n\n-a　:　ArchLinuxモードを強制的に有効化します。\n-d　:　dpkg,apt用のinstalled_listを使用します。\n-h　:　このヘルプを表示します。このオプションが有効な場合、他のオプションは無視されます。\n-p　:　pacman用のinstalled_listを使用します。\n-v　:　バージョン情報を表示します。\n-x　:　bashでのデバッグモードを有効化します。\n-z　:　デバッグモードを有効化します。（設定されたデバッグメッセージをターミナル上に表示します。）\n-r　[　実行する項目の番号　]　:　特定の動作をメニューをスキップして行います。\n-s　[スクリプトディレクトリ]　:　スクリプトディレクトリを指定します。\n-t　[　ウィンドウタイトル　]　:　ウィンドウタイトルを指定します。\n-u　[　　　ユーザー名　　　]　:　パッケージのビルドに使用するユーザーを指定します。\n"; exit 0;;
-        p) installed_list () { ${pacman} -Q | awk '{print $1}'; }; [[ ! $recall = true ]] && warning 600 100 "pacman用のinstalled_listを使用します。" > /dev/null ;;
-        r) direct_execution=true;if [[ ! $recall = true ]]; then case ${OPTARG} in 1) run="クリーンアップ";; 2) run="アップグレード";; 3) run="追加と削除" ;;  *) error 600 100 "引数${OPTARG}が間違っています。"; exit 1 ;; esac; else exit 0; fi;;
+        a) enable_arch;;
+        d) enable_installed_list_dpkg ;;
+        e) show_updater_info;;
+        g) softwares_update=${OPTARG} ; info 600 100 "アップデートスクリプトが${OPTARG}に指定されました。" ;;
+        h) show_help;;
+        p) enable_installed_list_pacman ;;
+        r) run_execution;;
         s) script_dir=${OPTARG}; warning 600 100 "スクリプトディレクトリが${OPTARG}に指定されました。" ;;
         t) window_text=${OPTARG}; warning 600 100 "ウィンドウタイトルが${OPTARG}に設定されました。" ;;
         u) aur_user=${OPTARG};;
-        v) show_version;exit 0;;
-        x) set -x; warning 600 100 "bashデバッグモードが有効化されました。";;
-        z) debug_mode=true; warning 600 100 "デバッグモードが有効化されました。" ;;
+        v) show_version;;
+        x) enable_bash_debug;;
+        z) enable_debug;;
+        -)
+            case "${OPTARG}" in
+                enable-arch ) enable_arch;;
+                dpkg ) enable_installed_list_dpkg;;
+                update-info ) show_updater_info;;
+                help ) show_help ;;
+                pacman ) enable_installed_list_pacman;;
+                version ) show_updater_info;;
+                bash-debug ) enable_bash_debug;;
+                debug ) enable_debug;;
+                * ) error 600 100 "引数が無効です。"; exit 1;;
+            esac
+            ;;
         "") : ;;
-        #* ) exit 1;;
+        * ) exit 1;;
     esac
 done
 set -eu
@@ -246,7 +324,9 @@ fi
 
 
 #-- pacapt --#
-if [[ ! $ID = "arch" || ! $ID = "arch32" ]]; then
+if [[ $ID = "arch" || $ID = "arch32" ]]; then
+    pacman=pacman
+else
     if [[ ! -f $pacman ]]; then
         error 600 100 "$pacmanが存在しません。"
         exit 1
@@ -254,8 +334,6 @@ if [[ ! $ID = "arch" || ! $ID = "arch32" ]]; then
     if [[ ! -x $pacman ]]; then
         chmod 755 $pacman
     fi
-else
-    pacman=pacman
 fi
 
 
@@ -264,6 +342,19 @@ fi
 set +eu
 if [[ -z $debug_mode ]]; then
     debug_mode=false
+fi
+set -eu
+
+
+#-- softwares-update --##
+set +eu
+if [[ $softwares_update = "debug" ]]; then
+    if [[ -f /tmp/softwares_update ]]; then
+        rm -f /tmp/softwares_update
+    fi
+    echo -e '#!/usr/bin/env bash\n\nzenity --warning --text="疑似ソフトウェアアップデート デバッグモード" --width="300" --height="100"' > /tmp/softwares_update
+    chmod 755 /tmp/softwares_update
+    softwares_update=/tmp/softwares_update
 fi
 set -eu
 
@@ -326,7 +417,7 @@ set -eu
 
 #-- クリーンアップ --#
 function cleanup () {
-    $pacman -Scc --noconfirm　| loading 600 100 "クリーンアップを実行中です。"
+    $pacman -Scc --noconfirm | loading 600 100 "クリーンアップを実行中です。"
     if [[ $ID = "arch" || $ID = "arch32" ]]; then
         if [[ -n $(pacman -Qttdq) ]]; then
             $pacman -Qttdq | $pacman -Rsnc - | loading 600 100 "クリーンアップを実行中です。"
@@ -449,7 +540,13 @@ function install_and_uninstall () {
     selected_list=(${selected_list//'|'/ })
     set +eu
     if [[ ! $exit_code = 0 && -z $selected_list ]]; then
-        error 600 100 "パッケージが選択されませんでした。トップに戻ります。"
+        error 600 100 "パッケージが選択されませんでした。$( 
+            if [[ ! $direct_execution = "true" ]]; then 
+                echo 'トップに戻ります。'
+            else
+                echo '終了します。'
+            fi
+        )"
         call_me $options
         exit
     fi
@@ -540,19 +637,26 @@ if [[ ! $direct_execution = true ]]; then
     run=$(
         window \
             --info \
-            --text="何を実行しますか？\n\n終了・・・終了します\nクリーンアップ・・・パッケージのクリーンアップを行います。\nアップグレード・・・パッケージのアップグレードを行います\n追加と削除・・・パッケージのインストールやアンインストールを行います。 " \
+            --text="何を実行しますか？\n\n終了・・・終了します$( if [[ $ID = "arch" || $ID = "arch32" ]]; then echo "\nAUR情報を削除・・・保存されているAURのユーザー情報を削除します。"; fi )$( if [[ -n $softwares_update && -f $softwares_update && -x $softwares_update ]]; then echo "\n一覧をアップデート・・・「追加と削除」で選択できる項目をアップデートします。"; fi )\nクリーンアップ・・・パッケージのクリーンアップを行います。\nアップグレード・・・パッケージのアップグレードを行います\n追加と削除・・・パッケージのインストールやアンインストールを行います。 " \
             --ok-label="終了する" \
             $(
                 # ArchLinux用メニュー
                 if [[ $ID = "arch" || $ID = "arch32" ]]; then
-                    echo "--extra-button=保存されているAURユーザーデータを削除"
+                    echo '--extra-button=AUR情報を削除'
+                fi
+            ) \
+            $(
+                # スクリプトのアップデート
+                if [[ -n $softwares_update && -f $softwares_update && -x $softwares_update ]]; then
+                # if true; then
+                    echo "--extra-button=一覧をアップデート"
                 fi
             ) \
             --extra-button="クリーンアップ" \
             --extra-button="アップグレード" \
             --extra-button="追加と削除" \
-            --width="300" \
-            --height="100"
+            --width="400" \
+            --height="120"
     )
     exit_code=$?
     case $exit_code in
@@ -560,13 +664,16 @@ if [[ ! $direct_execution = true ]]; then
                 * ) :;;
     esac
 fi
+
+
 debug_msg "$runが選択されました。"
 case $run in
     "追加と削除" ) install_and_uninstall ;;
     "アップグレード" ) upgrade_pkg | loading 600 100 "パッケージのアップグレードを行っています。" ;;
-    "保存されているAURユーザーデータを削除" ) rm -f /tmp/user ; info 600 100 "保存されているユーザーを削除しました" ; exit 0;;
+    "AUR情報を削除" ) rm -f /tmp/user ; info 600 100 "保存されているユーザーを削除しました" ; exit 0;;
     "クリーンアップ" ) cleanup ;;
-    * ) exit 1 ;;
+    "一覧をアップデート" ) $softwares_update | loading 600 100 "スクリプトを更新しています。";;
+    * ) error 600 100 "例外が発生しました。"; exit 1;;
 esac
 set -eu
 
