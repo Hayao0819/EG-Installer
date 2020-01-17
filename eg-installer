@@ -145,7 +145,7 @@ function clear_variable () {
 # デバッグモード
 function debug_msg () {
     if [[ $debug_mode = true ]]; then
-        echo $@
+        echo -e $@
     fi
 }
 
