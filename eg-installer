@@ -135,6 +135,7 @@ function clear_variable () {
     unset package_name
     unset description
     unset run_preparing
+    unset preparing_msg
     unset install
     unset uninstall
     unset preparing
@@ -605,7 +606,11 @@ function install_and_uninstall () {
                     --width=600 \
                     --height=100
                 if $run_preparing; then
-                    preparing | loading 600 100 "パッケージをビルドしています"
+                    if [[ -n $preparing_msg ]]; then
+                        preparing | loading 600 100 $preparing_msg
+                    else
+                        preparing | loading 600 100 "パッケージをビルドしています"
+                    fi
                 fi
                 install | loading 600 100 "パッケージ$nameをインストールしています"
                 set +eu
