@@ -1,7 +1,17 @@
+#-- 表示名 --#
 name=
+
+#-- パッケージ名 --#
 package_name=
+
+#-- 説明 --#
 description=
-run_preparing=false
+
+#-- preparing関数を実行するかどうか --#
+run_preparing=true
+
+#-- preparing実行中のメッセージ --#
+preparing_msg=
 
 
 install () {

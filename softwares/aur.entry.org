@@ -1,15 +1,28 @@
+#-- 表示名 --#
 name=
+
+#-- パッケージ名 --#
 package_name=
+
+#-- 説明 --#
 description=
+
+#-- preparing関数を実行するかどうか --#
 run_preparing=true
 
+#-- preparing実行中のメッセージ --#
+preparing_msg=
 
 function preparing () {
-    curl -o /tmp/make_from_aur.sh https://gist.githubusercontent.com/Hayao0819/3389c0ab2f000da13dbfe8e06315131b/raw/601833a210eeb4e19fea48584569e29d0f8517dc/aur.bash
-    chmod 755 /tmp/make_from_aur.sh
-    su $aur_user -c "/tmp/make_from_aur.sh $package_name"
-    mv $(find /tmp -name "$package_name*.pkg.tar.xz") /tmp > /dev/null
-    rm /tmp/make_from_aur.sh
+    {
+        curl -o /tmp/make_from_aur.sh https://gist.githubusercontent.com/Hayao0819/3389c0ab2f000da13dbfe8e06315131b/raw/601833a210eeb4e19fea48584569e29d0f8517dc/aur.bash
+        chmod 755 /tmp/make_from_aur.sh
+    } | loading 600 100 "ビルドスクリプトをダウンロードしています..."
+    {
+        su $aur_user -c "/tmp/make_from_aur.sh $package_name"
+        mv $(find /tmp -name "$package_name*.pkg.tar.xz") /tmp > /dev/null
+        rm /tmp/make_from_aur.sh
+    } | loading 600 100 "$nameをビルドしています..."
 }
 
 function install () {
