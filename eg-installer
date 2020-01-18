@@ -218,7 +218,7 @@ function enable_installed_list_pacman () {
     installed_list () {
         ${pacman} -Q | awk '{print $1}'
     }
-    [[ ! $recall = true ]] && warning 600 100 "pacman用のinstalled_listを使用します。" > /dev/null
+    debug_msg "pacman用のinstalled_listを使用します。"
 }
 
 # 実行する内容を直接指定
@@ -239,13 +239,13 @@ function run_execution () {
 # bashデバッグを有効化
 function enable_bash_debug () {
     set -x
-    warning 600 100 "bashデバッグモードが有効化されました。"
+   debug_msg "bashデバッグモードが有効化されました。"
 }
 
 # デバッグメッセージを有効化
 function enable_debug () {
     debug_mode=true
-    warning 600 100 "デバッグモードが有効化されました。" 
+    debug_msg "デバッグモードが有効化されました。" 
 }
 
 # バージョン情報表示
@@ -289,12 +289,12 @@ while getopts 'adeg:hpr:s:t:u:vwxz-:' arg; do
         a) enable_arch;;
         d) enable_installed_list_dpkg ;;
         e) show_updater_info;;
-        g) softwares_update=${OPTARG} ; info 600 100 "アップデートスクリプトが${OPTARG}に指定されました。" ;;
+        g) softwares_update=${OPTARG} ; debug_msg "アップデートスクリプトが${OPTARG}に指定されました。" ;;
         h) show_help;;
         p) enable_installed_list_pacman ;;
         r) run_execution;;
-        s) script_dir=${OPTARG}; warning 600 100 "スクリプトディレクトリが${OPTARG}に指定されました。" ;;
-        t) window_text=${OPTARG}; warning 600 100 "ウィンドウタイトルが${OPTARG}に設定されました。" ;;
+        s) script_dir=${OPTARG}; debug_msg "スクリプトディレクトリが${OPTARG}に指定されました。" ;;
+        t) window_text=${OPTARG}; debug_msg "ウィンドウタイトルが${OPTARG}に設定されました。" ;;
         u) aur_user=${OPTARG};;
         v) show_version;;
         w) enable_bash_debug; enable_debug;;
