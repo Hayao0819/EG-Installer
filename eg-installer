@@ -180,7 +180,7 @@ if [[ -z $ID ]]; then
     source /etc/os-release
 fi
 set -eu
-
+options=$(echo $fixed_option $@)
 
 
 #-- アイコンチェック --#
