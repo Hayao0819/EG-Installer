@@ -15,9 +15,12 @@ SereneTeamが管理、開発を行っている[SereneStartdash](https://github.c
 ArchLinuxの場合は、簡単に試すことができます。  
 
 ```bash
-git clone https://github.com/Hayao0819/EG-Installer.git package-gui-installer
+git clone https://github.com/Hayao0819/EG-Installer.git eg-installer/
+cd eg-installer/
+chmod +x eg-installer
+./eg-installer -pa
 ```
-ダウンロード後、設定ファイル（settings.conf）でディストリビューションごとの設定をしたあとにrun.shを実行してください。
+
 
 # 依存関係
 - bash
