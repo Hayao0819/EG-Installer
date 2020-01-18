@@ -261,6 +261,27 @@ function show_version () {
 
 
 
+#-- recall判定 --#
+set +eu
+if [[ ! $recall = true ]]; then
+    recall=false
+fi
+set -eu
+
+
+
+#-- Rootチェック --#
+if [[ ! $UID = 0 ]]; then
+    if [[ ! -f /tmp/user || -w /tmp/user ]]; then
+        echo -n 'aur_user=' > /tmp/user
+        echo "$(whoami)" >> /tmp/user
+    fi
+    pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY $current_path $options> /dev/null
+    exit
+fi
+
+
+
 #-- デバッグ用引数 --#
 set +eu
 while getopts 'adeg:hpr:s:t:u:vwxz-:' arg; do
@@ -300,28 +321,8 @@ set -eu
 
 
 
-#-- Rootチェック --#
-if [[ ! $UID = 0 ]]; then
-    if [[ ! -f /tmp/user || -w /tmp/user ]]; then
-        echo -n 'aur_user=' > /tmp/user
-        echo "$(whoami)" >> /tmp/user
-    fi
-    sudo_recall=true
-    pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY $current_path $options> /dev/null
-    exit
-fi
 
 
-
-#-- recall判定 --#
-set +eu
-if [[ ! $recall = true ]]; then
-    recall=false
-fi
-if [[ ! $sudo_recall = true ]]; then
-    sudo_recall=false
-fi
-set -eu
 
 
 #-- check_pkgについて --#
