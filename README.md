@@ -12,13 +12,14 @@ ArchLinux派生ディストリビューションを構築する際の初期セ�
 SereneTeamが管理、開発を行っている[SereneStartdash](https://github.com/Hayao0819/serene-startdash)をご利用ください。
 
 # 試しに使う
-ArchLinuxの場合は、簡単に試すことができます。  
+ArchLinuxの場合は、簡単に試すことができます。
+v1.9からはconfigを変更しなくてもpacmanとaptが自動認識されるようになりました。
 
 ```bash
 git clone https://github.com/Hayao0819/EG-Installer.git eg-installer/
 cd eg-installer/
 chmod +x eg-installer
-./eg-installer -pa
+./eg-installer
 ```
 
 
