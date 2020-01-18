@@ -306,14 +306,35 @@ if [[ ! $UID = 0 ]]; then
         echo -n 'aur_user=' > /tmp/user
         echo "$(whoami)" >> /tmp/user
     fi
+    sudo_recall=true
     pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY $current_path $options> /dev/null
     exit
 fi
 
 
 
+#-- recall判定 --#
+set +eu
+if [[ ! $recall = true ]]; then
+    recall=false
+fi
+if [[ ! $sudo_recall = true ]]; then
+    sudo_recall=false
+fi
+set -eu
+
+
 #-- check_pkgについて --#
-check_func installed_list "$settingsで、installed_listをディストリビューションごとに設定してください。\nわからない場合は、ディストリビューションの配布元へ連絡してください。"
+if [[ ! $(type -t installed_list) = "function" ]]; then
+    if [[ -f "/usr/bin/pacman" ]]; then
+        enable_installed_list_dpkg
+    elif [[ -f "/usr/bin/apt-get" ]]; then
+        enable_installed_list_dpkg
+    else
+        error 800 100 "$settingsで、installed_listをディストリビューションごとに設定してください。\nわからない場合は、ディストリビューションの配布元へ連絡してください。"
+        exit 1
+    fi
+fi
 
 
 
@@ -672,7 +693,8 @@ if [[ ! $direct_execution = true ]]; then
 fi
 
 
-debug_msg "$runが選択されました。"
+debug_msg "run=$run"
+debug_msg "exit_code=$exit_code"
 case $run in
     "追加と削除" ) install_and_uninstall ;;
     "アップグレード" ) upgrade_pkg | loading 600 100 "パッケージのアップグレードを行っています。" ;;
