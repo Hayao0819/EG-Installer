@@ -328,7 +328,7 @@ set -eu
 #-- check_pkgについて --#
 if [[ ! $(type -t installed_list) = "function" ]]; then
     if [[ -f "/usr/bin/pacman" ]]; then
-        enable_installed_list_dpkg
+        enable_installed_list_pacman
     elif [[ -f "/usr/bin/apt-get" ]]; then
         enable_installed_list_dpkg
     else
