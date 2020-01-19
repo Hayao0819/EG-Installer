@@ -23,6 +23,9 @@
 # 情報ウィンドウ
 # info [横幅] [高さ] [メッセージ]
 #
+# 質問ウィンドウ
+# question [横幅] [高さ] [メッセージ] [OKラベル] [Cancelラベル]
+#
 # 改行する場合は \n と記述してください。　
 
 
@@ -31,6 +34,8 @@
 settings=$(cd $(dirname $0) && pwd)/config
 entry_extension="entry"
 version=1.9
+temp_dir=/tmp/EG-Installer-${version}
+debug_mode=false
 
 
 
@@ -99,6 +104,17 @@ function info () {
         --width="$1" \
         --height="$2" \
         --text="$3"
+}
+
+# 質問ウィンドウ
+function question () {
+    window \
+        --question \
+        --width="$1" \
+        --height="$2"
+        --text="$3" \
+        --ok-label="$4" \
+        --cancel-label="$5"
 }
 
 # ユーザーチェック
@@ -179,8 +195,9 @@ source $settings
 if [[ -z $ID ]]; then
     source /etc/os-release
 fi
-set -eu
 options=$(echo $fixed_option $@)
+set -eu
+
 
 
 #-- アイコンチェック --#
@@ -266,15 +283,6 @@ function show_version () {
     debug_msg "EG-installer v${version}"
     exit 0
 }
-
-
-
-#-- recall判定 --#
-set +eu
-if [[ ! $recall = true ]]; then
-    recall=false
-fi
-set -eu
 
 
 
@@ -370,12 +378,13 @@ fi
 
 
 
-#-- デバッグモード --#
+#-- set false --#
 set +eu
-if [[ -z $debug_mode ]]; then
-    debug_mode=false
-fi
+[[ ! $recall = true ]] && recall=false
+[[ ! $run_in_terminal = true ]] && run_in_terminal=false
+[[ ! $debug_mode = true ]] && debug_mode=false
 set -eu
+
 
 
 #-- softwares-update --##
@@ -392,9 +401,16 @@ set -eu
 
 
 
+#-- 一時ディレクトリの作成 --#
+if [[ ! -d $temp_dir ]]; then
+    mkdir -p $temp_dir
+fi
+
+
+
 #-- AURユーザー --#
-set +eu
 debug_msg "/etc/os-releaseのIDは$IDです。"
+set +eu
 if [[ ! $recall = true ]]; then
     if [[ $ID = "arch" || $ID = "arch32" ]]; then
         function ask_user () {
@@ -480,7 +496,7 @@ function upgrade_pkg () {
 function install_and_uninstall () {
 
     # スクリプトのアップデート処理
-    set + eu
+    set +eu
     if [[ -n $softwares_update && -f $softwares_update && -x $softwares_update ]]; then
         $softwares_update | loading 600 100 "スクリプトを更新しています。"
     fi
