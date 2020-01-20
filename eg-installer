@@ -39,22 +39,19 @@ debug_mode=false
 
 
 
-#-- エラーチェック --#
-set -eu
-
-
-
 #-- 変数定義 --#
+set -eu
 current_path=$(cd $(dirname $0) && pwd)/$(basename $0)
 current_dir=$(dirname $current_path)
 options=$@
 unset run
-
+set +eu
 
 
 #-- 関数定義 --#
 
 # 自分自身を呼び出す
+set -eu
 function call_me () {
     export recall=true
     bash ${0} $options
@@ -172,19 +169,21 @@ function debug_opts_msg () {
         echo -e $@
     fi
 }
+set +eu
 
 
 
 #-- ディスプレイチェック --#
+set -eu
 if [[ -z $DISPLAY ]]; then
     echo "GUI環境で起動してください。" >&2
     exit 1
 fi
+set +eu
 
 
 
 #-- 設定読み込み --#
-set +eu
 if [[ ! -f $settings ]]; then
     error 600 100 "$settingsが存在しません。"
     exit 1
@@ -196,7 +195,6 @@ if [[ -z $ID ]]; then
     source /etc/os-release
 fi
 options=$(echo $fixed_option $@)
-set -eu
 
 
 
@@ -299,7 +297,6 @@ fi
 
 
 #-- デバッグ用引数 --#
-set +eu
 while getopts 'adeg:hpr:s:t:u:vwxz-:' arg; do
     case "${arg}" in
         a) enable_arch;;
@@ -333,11 +330,6 @@ while getopts 'adeg:hpr:s:t:u:vwxz-:' arg; do
         * ) exit 1;;
     esac
 done
-set -eu
-
-
-
-
 
 
 
@@ -379,16 +371,13 @@ fi
 
 
 #-- set false --#
-set +eu
 [[ ! $recall = true ]] && recall=false
 [[ ! $run_in_terminal = true ]] && run_in_terminal=false
 [[ ! $debug_mode = true ]] && debug_mode=false
-set -eu
 
 
 
 #-- softwares-update --##
-set +eu
 if [[ $softwares_update = "debug" ]]; then
     if [[ -f /tmp/softwares_update ]]; then
         rm -f /tmp/softwares_update
@@ -397,7 +386,6 @@ if [[ $softwares_update = "debug" ]]; then
     chmod 755 /tmp/softwares_update
     softwares_update=/tmp/softwares_update
 fi
-set -eu
 
 
 
@@ -410,7 +398,6 @@ fi
 
 #-- AURユーザー --#
 debug_msg "/etc/os-releaseのIDは$IDです。"
-set +eu
 if [[ ! $recall = true ]]; then
     if [[ $ID = "arch" || $ID = "arch32" ]]; then
         function ask_user () {
@@ -460,7 +447,6 @@ if [[ ! $recall = true ]]; then
     fi
 fi
 debug_msg "AURユーザーは$aur_userに設定されました。"
-set -eu
 
 
 
@@ -496,11 +482,9 @@ function upgrade_pkg () {
 function install_and_uninstall () {
 
     # スクリプトのアップデート処理
-    set +eu
     if [[ -n $softwares_update && -f $softwares_update && -x $softwares_update ]]; then
         $softwares_update | loading 600 100 "スクリプトを更新しています。"
     fi
-    set -eu
 
     # スクリプト読み込み
     scripts=($(cd $script_dir; ls *.${entry_extension}; cd ..))
@@ -508,30 +492,24 @@ function install_and_uninstall () {
         source $script_dir/$package
 
         function check_func () {
-            set +eu
             if [[ ! $(type -t $1) = "function" ]]; then
                 error 600 100 "スクリプト$packageの$1関数が間違っています。"
                 exit 1
             fi
-            set -eu
         }
         function check_variable () {
-            set +eu
             eval variable=$1
             if [[ -z $variable ]]; then
                 error 600 100 "スクリプト$packageに$variable変数が間違っています。"
                 exit 1
             fi
-            set -eu
         }
 
         check_variable name
-        set +eu
         if [[ ! $install_check = false ]]; then
             check_variable package_name
             check_func uninstall
         fi
-        set -eu
         check_variable description
         check_variable run_preparing
         check_func install
@@ -567,7 +545,6 @@ function install_and_uninstall () {
                 scripts=($(cd $script_dir; ls *.${entry_extension}; cd ..))
                 for package in ${scripts[@]}; do
                     source $script_dir/$package
-                    set +eu
                     if [[ $install_check = false ]]; then
                         status_display="None"
                     elif [[ $(check_pkg $package_name) = 0 ]]; then
@@ -575,7 +552,6 @@ function install_and_uninstall () {
                     else
                         status_display="いいえ"
                     fi
-                    set -eu
                     echo "FALSE"
                     echo "$name"
                     echo "$status_display"
@@ -587,7 +563,6 @@ function install_and_uninstall () {
 
     selected_list=$(gen_list; exit_code=$?)
     selected_list=(${selected_list//'|'/ })
-    set +eu
     if [[ ! $exit_code = 0 && -z $selected_list ]]; then
         error 600 100 "パッケージが選択されませんでした。$( 
             if [[ ! $direct_execution = "true" ]]; then 
@@ -599,7 +574,6 @@ function install_and_uninstall () {
         call_me $options
         exit
     fi
-    set -eu
 
 
     # データベースの更新
@@ -627,7 +601,6 @@ function install_and_uninstall () {
 
         # インストール or アンインストール
         source $script_dir/$package
-        set +eu
         if [[ $install_check = false ]]; then
             set -eu
             window \
@@ -674,7 +647,6 @@ function install_and_uninstall () {
                 set +eu
             fi
         fi
-        set -eu
     done
     info 600 100 "処理が完了しました。\n詳細はターミナルを参照してください。"
 }
@@ -682,7 +654,6 @@ function install_and_uninstall () {
 
 
 #-- 実行 --#
-set +eu
 unset exit_code
 
 # メニュー
@@ -729,7 +700,6 @@ case $run in
     "一覧をアップデート" ) $softwares_update | loading 600 100 "スクリプトを更新しています。";;
     * ) error 600 100 "例外が発生しました。"; exit 1;;
 esac
-set -eu
 
 
 
