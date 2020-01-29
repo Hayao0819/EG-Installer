@@ -1,4 +1,4 @@
-name=Viewnior
+name=viewnior
 package_name=viewnior
 description="非常に軽量な画像ビューアー"
 run_preparing=false

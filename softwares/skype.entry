@@ -1,4 +1,4 @@
-name="Skype"
+name="skype"
 package_name="skype-desktop-bin"
 description="LinuxのためのSkype"
 run_preparing=true

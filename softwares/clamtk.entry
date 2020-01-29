@@ -1,4 +1,4 @@
-name="ClamTk"
+name="clamtk"
 package_name="clamtk"
 description="Linuxのためのアンチウイルスソフト。"
 run_preparing=false

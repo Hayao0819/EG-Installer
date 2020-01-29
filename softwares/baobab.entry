@@ -1,4 +1,4 @@
-name="Baobab"
+name="baobab"
 package_name="baobab"
 description="ディスクのファイルサイズを確認します"
 run_preparing=false

@@ -1,4 +1,4 @@
-name="Brasero"
+name="brasero"
 package_name="brasero"
 description="CD/DVDマスタリングツール"
 run_preparing=false

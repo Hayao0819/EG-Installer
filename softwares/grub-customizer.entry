@@ -1,4 +1,4 @@
-name="Grub-Customizer"
+name="grub-customizer"
 package_name="grub-customizer"
 description="ブートローダーであるGrub2のカスタマイズをGUIで簡単に行なえます。"
 run_preparing=false

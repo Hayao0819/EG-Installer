@@ -1,4 +1,4 @@
-name="Genymotion"
+name="genymotion"
 package_name="genymotion"
 description="Linuxで動くVirtualBoxベースのAndroidエミュレータ"
 run_preparing=true

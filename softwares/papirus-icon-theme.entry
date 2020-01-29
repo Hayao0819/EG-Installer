@@ -1,4 +1,4 @@
-name="Papirusアイコンテーマ"
+name="papirus"
 package_name="papirus-icon-theme"
 description="フラットなアイコンテーマ"
 run_preparing=false

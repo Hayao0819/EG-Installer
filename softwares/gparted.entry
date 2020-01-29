@@ -1,4 +1,4 @@
-name="Gparted"
+name="gparted"
 package_name="gparted"
 description="ディスクのパーティションを操作します"
 run_preparing=false

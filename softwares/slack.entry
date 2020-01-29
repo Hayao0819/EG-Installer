@@ -1,4 +1,4 @@
-name="Slack"
+name="slack"
 package_name="slack-desktop"
 description="LinuxのためのSlackクライアント"
 run_preparing=true

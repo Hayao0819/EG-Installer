@@ -1,4 +1,4 @@
-name="Google-Chrome"
+name="google-chrome"
 package_name="google-chrome"
 description="Googleの人気のある信頼できるWebブラウザー"
 run_preparing=true
