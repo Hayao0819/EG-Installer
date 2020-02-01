@@ -137,9 +137,18 @@ function check_func () {
 # パッケージチェック
 function check_pkg () {
     if [[ -n $(installed_list | grep -x "$1") ]]; then
-        printf 0
+        printf "installed_pacman"
     else
-        printf 1
+        printf "notinstalled"
+    fi
+}
+
+# スナップチェック
+function check_snap () {
+    if [[ -n $(installed_snap_list | grep -x "$1") ]]; then
+        printf "installed_snap"
+    else
+        printf "notinstalled"
     fi
 }
 
@@ -234,6 +243,23 @@ function enable_installed_list_dpkg () {
 function show_help () {
     info 700 100 "==　デバッグ用　==\nこれはデバッグ用オプションです。通常利用はしないでください。\n$settingsを変更することで値を保存できます。\n\n-a　:　ArchLinuxモードを強制的に有効化します。\n-d　:　dpkg,apt用のinstalled_listを使用します。\n-h　:　このヘルプを表示します。このオプションが有効な場合、他のオプションは無視されます。\n-p　:　pacman用のinstalled_listを使用します。\n-v　:　バージョン情報を表示します。\n-x　:　bashでのデバッグモードを有効化します。\n-z　:　デバッグモードを有効化します。（設定されたデバッグメッセージをターミナル上に表示します。）\n-r　[　実行する項目の番号　]　:　特定の動作をメニューをスキップして行います。\n-s　[スクリプトディレクトリ]　:　スクリプトディレクトリを指定します。\n-t　[　ウィンドウタイトル　]　:　ウィンドウタイトルを指定します。\n-u　[　　　ユーザー名　　　]　:　パッケージのビルドに使用するユーザーを指定します。\n"
     exit 0
+}
+
+# snap用のinstalled_snap_list
+function isinstalled_snap () { 
+    if [[ "$(check_pkg snapd)" == installed_apt ]]; then
+            snapd=installed
+    else
+        printf "cannot_get_install_status"
+    fi
+}
+
+function installed_snap_list () {
+    if [[ "$snapd" == installed ]]; then
+        snap list | awk 'NR>1 {print $1}'
+    else
+        printf "canot_get_install_status"
+    fi
 }
 
 # pacman用のinstalled_listを有効化
@@ -519,11 +545,17 @@ function install_and_uninstall () {
         clear_variable
     done
 
-
+    # snapパッケージのアンインストール
+    function uninstall_snap () {
+        snap remove $name
+    }
 
     # リスト
 
-    window \
+    # 高速化のためにここでsnapdがインストールされているか判定する
+   isinstalled_snap
+
+   window \
         --warning \
         --width="600" \
         --height="100" \
@@ -547,10 +579,12 @@ function install_and_uninstall () {
                     source $script_dir/$package
                     if [[ $install_check = false ]]; then
                         status_display="None"
-                    elif [[ $(check_pkg $package_name) = 0 ]]; then
-                        status_display="はい"
-                    else
-                        status_display="いいえ"
+                    elif [[ $(check_pkg $package_name) = installed_pacman ]]; then
+			status_display="はい(pacman)"
+		    elif  [[ $(check_snap $package_name) == installed_snap ]]; then
+		        status_display="はい(snap)"
+		    else
+			status_display="いいえ"
                     fi
                     echo "FALSE"
                     echo "$name"
@@ -616,7 +650,7 @@ function install_and_uninstall () {
             install | loading 600 100 "パッケージ$nameをインストールしています"
             set +eu
         else
-            if [[ $(check_pkg $package_name) = 1 ]]; then
+            if [[ $(check_pkg $package_name) = notinstalled ]]; then
                 set -eu
                 window \
                     --question \
@@ -634,7 +668,7 @@ function install_and_uninstall () {
                 fi
                 install | loading 600 100 "パッケージ$nameをインストールしています"
                 set +eu
-            else
+	    elif [[ $(check_pkg $package_name) == installed_pacman ]]; then
                 set -eu
                 window \
                     --question \
@@ -644,6 +678,20 @@ function install_and_uninstall () {
                     --width=600 \
                     --height=100
                 uninstall | loading 600 100 "パッケージ$nameをアンインストールしています。"
+                set +eu
+	    elif [[ $(check_snap $package_name) == installed_snap ]]; then
+                set -eu
+                window \
+                    --question \
+                    --text="パッケージ$nameはsnapパッケージでインストール済みで
+す。pacmanパッケージに置き換えます。よろしいですか？" \
+                    --ok-label="続行する" \
+                    --cancel-label="中断する" \
+                    --width=600 \
+                    --height=100
+                uninstall_snap | loading 600 100 "パッケージ$nameをアンインスト
+ールしています。"
+                install | loading 600 100 "パッケージ$nameをインストールしています"
                 set +eu
             fi
         fi
