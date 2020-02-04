@@ -33,7 +33,7 @@
 #-- 設定 --#
 settings=$(cd $(dirname $0) && pwd)/config
 entry_extension="entry"
-version=1.9
+version=1.10
 temp_dir=/tmp/EG-Installer-${version}
 debug_mode=false
 
