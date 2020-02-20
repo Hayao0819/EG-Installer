@@ -1,4 +1,6 @@
-name="日本語入力システム"
+#!/usr/bin/env bash
+
+name="Fcitx(日本語入力)"
 package_name="fcitx-mozc"
 description="日本語入力のインストールと設定を行います。"
 run_preparing=false

@@ -1,4 +1,6 @@
-name="slack"
+#!/usr/bin/env bash
+
+name="Slack"
 package_name="slack-desktop"
 description="LinuxのためのSlackクライアント"
 run_preparing=true

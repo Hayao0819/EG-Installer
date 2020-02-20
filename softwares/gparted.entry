@@ -1,4 +1,6 @@
-name="gparted"
+#!/usr/bin/env bash
+
+name="Gparted"
 package_name="gparted"
 description="ディスクのパーティションを操作します"
 run_preparing=false

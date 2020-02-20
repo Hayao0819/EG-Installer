@@ -1,4 +1,6 @@
-name="brasero"
+#!/usr/bin/env bash
+
+name="Brasero"
 package_name="brasero"
 description="CD/DVDマスタリングツール"
 run_preparing=false

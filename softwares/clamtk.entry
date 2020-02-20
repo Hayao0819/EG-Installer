@@ -1,4 +1,6 @@
-name="clamtk"
+#!/usr/bin/env bash
+
+name="ClamTk"
 package_name="clamtk"
 description="Linuxのためのアンチウイルスソフト。"
 run_preparing=false

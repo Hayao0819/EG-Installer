@@ -1,6 +1,8 @@
+#!/usr/bin/env bash
+
 name="update-grub"
 package_name="update-grub"
-description="grub.cfgを生成します。"
+description="grub.cfgを生成するための補助スクリプト"
 run_preparing=true
 
 

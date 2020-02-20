@@ -1,4 +1,6 @@
-name="papirus"
+#!/usr/bin/env bash
+
+name="Papirusアイコンテーマ"
 package_name="papirus-icon-theme"
 description="フラットなアイコンテーマ"
 run_preparing=false

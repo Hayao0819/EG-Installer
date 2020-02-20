@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-name="Baobab"
-package_name="baobab"
-description="ディスクのファイルサイズを確認します"
+name="Shotcut"
+package_name="shotcut"
+description="クロスプラットホームのビデオエディター"
 run_preparing=false
 
 

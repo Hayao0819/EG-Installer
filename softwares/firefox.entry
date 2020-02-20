@@ -1,4 +1,6 @@
-name="firefox"
+#!/usr/bin/env bash
+
+name="Firefox"
 package_name="firefox"
 description="Mozillaの高速で動作するブラウザ"
 run_preparing=false

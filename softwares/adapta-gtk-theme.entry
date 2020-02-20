@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 name="Adapta-Theme"
 package_name="adapta-gtk-theme"
 description="マテリアルデザインに基づいたテーマパック"

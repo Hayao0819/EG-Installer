@@ -1,4 +1,6 @@
-name="skype"
+#!/usr/bin/env bash
+
+name="Skype"
 package_name="skype-desktop-bin"
 description="LinuxのためのSkype"
 run_preparing=true
