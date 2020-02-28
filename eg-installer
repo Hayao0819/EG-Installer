@@ -625,13 +625,19 @@ function install_and_uninstall () {
                     --cancel-label="中断する" \
                     --width=600 \
                     --height=100
+                set +eu
                 if $run_preparing; then
                     if [[ -n $preparing_msg ]]; then
+                        set -eu
                         preparing | loading 600 100 $preparing_msg
+                        set +eu
                     else
+                        set -eu
                         preparing | loading 600 100 "パッケージをビルドしています"
+                        set +eu
                     fi
                 fi
+                set -eu
                 install | loading 600 100 "パッケージ$nameをインストールしています"
                 set +eu
             else
