@@ -277,8 +277,8 @@ function show_version () {
         --info \
         --width="600" \
         --height="100" \
-        --text="＝＝　EG-Intaler　＝＝\nVersion:　${version}\nYamada　Hayao　shun819.mail@gmail.com"
-    debug_msg "EG-installer v${version}"
+        --text="＝＝　EG-Installer　＝＝\nVersion:　${version}\nYamada　Hayao　shun819.mail@gmail.com"
+    debug_msg "EG-Installer v${version}"
     exit 0
 }
 
